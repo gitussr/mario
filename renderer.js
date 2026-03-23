@@ -1,710 +1,480 @@
-/* ═══════════════════════════════════════════════════════
-   MARIO BIRDS — RENDERER
-   All canvas drawing: backgrounds, player, pigs, structures,
-   coins, blocks, UI elements — cartoon comic art style
-═══════════════════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════════
+   RENDERER — Classic pixel-art Mario + all objects
+═══════════════════════════════════════════════ */
 const Renderer = (() => {
 
-  // ── Theme palettes ─────────────────────────────────
   const THEMES = {
-    grass:   { sky: ['#5bc8f5','#87e0ff'], groundTop: '#4caf50', groundFill: '#8B5E3C', cloud: '#fff' },
-    desert:  { sky: ['#f5d06b','#fbe8a6'], groundTop: '#d4a017', groundFill: '#9b7030', cloud: '#fffbe6' },
-    snow:    { sky: ['#c8e8ff','#e8f4ff'], groundTop: '#d0eaff', groundFill: '#7ab0cc', cloud: '#fff' },
-    lava:    { sky: ['#ff9c40','#ffcc88'], groundTop: '#cc4400', groundFill: '#882200', cloud: '#ffaa66' },
-    sky:     { sky: ['#2a9fd6','#5bc8f5'], groundTop: '#1170a0', groundFill: '#0d4d70', cloud: '#fff' },
-    castle:  { sky: ['#4a3060','#6a5080'], groundTop: '#555',    groundFill: '#333',    cloud: '#887799' },
+    grass:  { sky:['#5c94fc','#5c94fc'], groundTop:'#4caf50', groundFill:'#8B5E3C', hill:'rgba(34,120,34,0.35)' },
+    desert: { sky:['#e8c96a','#f5d87a'], groundTop:'#c8a020', groundFill:'#8a5a10', hill:'rgba(180,120,0,0.25)' },
+    snow:   { sky:['#9dd4f8','#c8ecff'], groundTop:'#ddeeff', groundFill:'#7aaabb', hill:'rgba(200,230,255,0.4)' },
+    lava:   { sky:['#c84000','#e05800'], groundTop:'#882200', groundFill:'#441100', hill:'rgba(200,60,0,0.3)' },
+    sky:    { sky:['#2060c0','#4080e0'], groundTop:'#1060a0', groundFill:'#083060', hill:'rgba(0,60,150,0.3)' },
+    castle: { sky:['#181828','#302848'], groundTop:'#444',    groundFill:'#222',    hill:'rgba(40,20,60,0.5)' },
   };
 
-  // ── Helper drawing functions ────────────────────────
-  function roundRect(ctx, x, y, w, h, r) {
+  // ── pixel helpers ──
+  function px(ctx, x, y, w, h, col) {
+    ctx.fillStyle = col;
+    ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+  }
+
+  function outline(ctx, color='#000', lw=2.5) {
+    ctx.strokeStyle=color; ctx.lineWidth=lw; ctx.stroke();
+  }
+
+  function roundRect(ctx,x,y,w,h,r=6) {
     ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+    ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r);
+    ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h);
+    ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);
     ctx.closePath();
   }
 
-  function outline(ctx, color = '#1a1a2e', width = 3) {
-    ctx.strokeStyle = color;
-    ctx.lineWidth = width;
-    ctx.stroke();
-  }
-
-  function eyeball(ctx, cx, cy, r, pupilDx = 0, pupilDy = 0) {
-    // White
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-    outline(ctx, '#1a1a2e', 2);
-    // Pupil
-    ctx.fillStyle = '#1a1a2e';
-    ctx.beginPath(); ctx.arc(cx + pupilDx, cy + pupilDy, r * 0.55, 0, Math.PI * 2); ctx.fill();
-    // Shine
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(cx + pupilDx + r*0.15, cy + pupilDy - r*0.2, r * 0.2, 0, Math.PI * 2); ctx.fill();
-  }
-
-  // ── BACKGROUND ─────────────────────────────────────
+  // ── BACKGROUND ──────────────────────────────────
   function drawBackground(ctx, cw, ch, scrollX, level, tick) {
     const theme = THEMES[level.theme] || THEMES.grass;
-
-    // Sky gradient
-    const grad = ctx.createLinearGradient(0, 0, 0, ch);
+    const grad = ctx.createLinearGradient(0,0,0,ch);
     grad.addColorStop(0, theme.sky[0]);
     grad.addColorStop(1, theme.sky[1]);
     ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, cw, ch);
+    ctx.fillRect(0,0,cw,ch);
 
-    // Parallax clouds (layer 1 — slow)
-    drawClouds(ctx, cw, ch, scrollX * 0.2, theme.cloud, tick, 0);
-    // Parallax hills/bg decor (layer 2)
-    drawBgDecor(ctx, cw, ch, scrollX * 0.5, level.theme, tick);
-    // Parallax clouds (layer 2 — faster)
-    drawClouds(ctx, cw, ch, scrollX * 0.4, theme.cloud, tick, 1);
+    // Clouds layer 1
+    drawClouds(ctx, cw, ch, scrollX*0.18, tick, 0);
+    // BG hills
+    drawHills(ctx, cw, ch, scrollX*0.45, theme);
+    // Clouds layer 2
+    drawClouds(ctx, cw, ch, scrollX*0.35, tick, 1);
   }
 
-  function drawClouds(ctx, cw, ch, off, color, tick, layer) {
-    const positions = layer === 0
-      ? [[0.05,0.12],[0.28,0.08],[0.52,0.15],[0.76,0.07],[0.92,0.14],[1.15,0.10]]
-      : [[0.14,0.22],[0.40,0.18],[0.65,0.25],[0.88,0.20]];
-
-    for (const [px, py] of positions) {
-      const x = ((px * cw * 3 - off * 0.6) % (cw * 1.5)) - 100;
-      const y = py * ch;
-      const scale = layer === 0 ? 1 : 0.75;
-      drawCloud(ctx, x, y, scale, color);
+  function drawClouds(ctx, cw, ch, off, tick, layer) {
+    const positions = layer===0
+      ? [[0.05,0.10],[0.30,0.07],[0.55,0.13],[0.80,0.06],[1.10,0.11]]
+      : [[0.18,0.20],[0.45,0.17],[0.72,0.22],[0.95,0.18]];
+    for (const [px2,py] of positions) {
+      const x = ((px2*cw*3 - off) % (cw*1.4)) - 80;
+      drawCloud(ctx, x, py*ch, layer===0 ? 1 : 0.7);
     }
   }
 
-  function drawCloud(ctx, x, y, scale, color) {
-    const s = scale;
-    ctx.fillStyle = color;
-    ctx.strokeStyle = 'rgba(0,0,0,0.18)';
-    ctx.lineWidth = 3 * s;
-
-    const parts = [[0,0,38],[30,-15,28],[60,0,36],[90,-10,26],[115,2,32]];
-    for (const [dx, dy, r] of parts) {
-      ctx.beginPath();
-      ctx.arc(x + dx * s, y + dy * s, r * s, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+  function drawCloud(ctx, x, y, scale) {
+    ctx.fillStyle = '#fff';
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth=2;
+    for (const [dx,dy,r] of [[0,0,30],[28,-12,24],[56,0,28],[82,-8,22],[108,2,26]]) {
+      ctx.beginPath(); ctx.arc(x+dx*scale, y+dy*scale, r*scale, 0, Math.PI*2);
+      ctx.fill(); ctx.stroke();
     }
   }
 
-  function drawBgDecor(ctx, cw, ch, off, theme, tick) {
-    if (theme === 'grass' || theme === 'sky') {
-      // Rolling hills
-      ctx.fillStyle = 'rgba(100,200,100,0.18)';
-      ctx.beginPath();
-      ctx.moveTo(0, ch * 0.75);
-      for (let x = 0; x <= cw; x += 10) {
-        const y = ch * 0.72 - Math.sin((x + off * 0.5) / 180) * 30;
-        ctx.lineTo(x, y);
-      }
-      ctx.lineTo(cw, ch); ctx.lineTo(0, ch); ctx.closePath(); ctx.fill();
+  function drawHills(ctx, cw, ch, off, theme) {
+    ctx.fillStyle = theme.hill;
+    ctx.beginPath(); ctx.moveTo(0, ch);
+    for (let x=0; x<=cw; x+=8) {
+      const y = ch*0.75 - Math.sin((x+off)*0.004)*40 - Math.sin((x+off)*0.011)*20;
+      x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
     }
-    if (theme === 'castle' || theme === 'lava') {
-      // Dark distant fortress silhouettes
-      ctx.fillStyle = 'rgba(0,0,0,0.25)';
-      const bx = ((off * 0.3) % (cw * 2)) - cw;
-      for (let i = 0; i < 4; i++) {
-        const bxOff = bx + i * 600;
-        ctx.fillRect(bxOff, ch * 0.55, 120, ch * 0.45);
-        ctx.fillRect(bxOff - 20, ch * 0.47, 40, ch * 0.53);
-        ctx.fillRect(bxOff + 100, ch * 0.49, 40, ch * 0.51);
-      }
-    }
+    ctx.lineTo(cw,ch); ctx.closePath(); ctx.fill();
   }
 
-  // ── GROUND ─────────────────────────────────────────
+  // ── GROUND ──────────────────────────────────────
   function drawGround(ctx, cw, ch, scrollX, level, groundY) {
     const theme = THEMES[level.theme] || THEMES.grass;
-
-    // Ground top strip
     ctx.fillStyle = theme.groundTop;
-    ctx.fillRect(0, groundY, cw, 28);
-    ctx.strokeStyle = '#1a1a2e';
-    ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(cw, groundY); ctx.stroke();
-
-    // Ground fill
+    ctx.fillRect(0, groundY, cw, 24);
     ctx.fillStyle = theme.groundFill;
-    ctx.fillRect(0, groundY + 28, cw, ch - groundY - 28);
-
-    // Tile lines on ground
-    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-    ctx.lineWidth = 1.5;
-    const tileOff = scrollX % TILE;
-    for (let x = -tileOff; x < cw; x += TILE) {
-      ctx.beginPath(); ctx.moveTo(x, groundY + 28); ctx.lineTo(x, ch); ctx.stroke();
-    }
-
-    // Grass blades
-    ctx.fillStyle = '#2e7d32';
-    for (let x = ((-scrollX * 0.1) % 32); x < cw + 32; x += 18 + (Math.floor(x / 30) % 5) * 3) {
-      const bh = 8 + (x % 5) * 2;
-      ctx.fillRect(x, groundY - bh + 28, 4, bh);
+    ctx.fillRect(0, groundY+24, cw, ch-groundY-24);
+    ctx.strokeStyle='rgba(0,0,0,0.3)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(0,groundY); ctx.lineTo(cw,groundY); ctx.stroke();
+    // Tile marks
+    ctx.strokeStyle='rgba(0,0,0,0.1)'; ctx.lineWidth=1;
+    const toff = scrollX % TILE;
+    for (let x=-toff; x<cw; x+=TILE) {
+      ctx.beginPath(); ctx.moveTo(x,groundY+24); ctx.lineTo(x,ch); ctx.stroke();
     }
   }
 
-  // ── PLATFORMS ──────────────────────────────────────
+  // ── PLATFORMS ───────────────────────────────────
   function drawPlatform(ctx, p, scrollX) {
     const sx = p.x - scrollX;
-    const colors = {
-      grass:  { top: '#4caf50', fill: '#8B5E3C', line: '#2e7d32' },
-      stone:  { top: '#9e9e9e', fill: '#616161', line: '#424242' },
-      cloud:  { top: '#fff',    fill: '#e3f2fd', line: '#90caf9' },
-      ice:    { top: '#b3e5fc', fill: '#81d4fa', line: '#4fc3f7' },
+    const cols = {
+      grass:  {top:'#4caf50', fill:'#8B5E3C'},
+      stone:  {top:'#9e9e9e', fill:'#666'},
+      cloud:  {top:'#fff',    fill:'#d0ecff'},
+      ice:    {top:'#b3e5fc', fill:'#7dc8e8'},
+      ground: {top:'#4caf50', fill:'#8B5E3C'},
     };
-    const c = colors[p.type] || colors.grass;
-
-    // Platform body
+    const c = cols[p.type] || cols.grass;
     ctx.fillStyle = c.fill;
-    roundRect(ctx, sx, p.y, p.w, p.h, 8);
-    ctx.fill();
-
-    // Top strip
+    roundRect(ctx, sx, p.y, p.w, p.h, 6); ctx.fill();
     ctx.fillStyle = c.top;
-    roundRect(ctx, sx, p.y, p.w, 16, 8);
-    ctx.fill();
-
-    // Outline
-    outline(ctx);
-    roundRect(ctx, sx, p.y, p.w, p.h, 8);
-    outline(ctx);
-
-    // Cloud fluff
-    if (p.type === 'cloud') {
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      for (let i = 0; i < Math.floor(p.w / 28); i++) {
-        ctx.beginPath();
-        ctx.arc(sx + 14 + i * 28, p.y - 6, 10, 0, Math.PI * 2);
-        ctx.fill();
+    roundRect(ctx, sx, p.y, p.w, 14, 6); ctx.fill();
+    ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=2.5;
+    roundRect(ctx, sx, p.y, p.w, p.h, 6); ctx.stroke();
+    if (p.type==='cloud') {
+      ctx.fillStyle='rgba(255,255,255,0.55)';
+      for (let i=0;i<Math.floor(p.w/24);i++) {
+        ctx.beginPath(); ctx.arc(sx+12+i*24, p.y-5, 8, 0, Math.PI*2); ctx.fill();
       }
     }
   }
 
-  // ── BLOCKS ─────────────────────────────────────────
+  // ── BLOCKS ──────────────────────────────────────
   function drawBlock(ctx, b, scrollX, tick) {
     if (b.destroyed) return;
-    const sx = b.x - scrollX;
-    const sy = b.y + b.bounceY;
-
-    if (b.type === 'question') {
-      // Animated golden block
-      const pulse = Math.sin(tick * 5) * 0.08;
-      ctx.fillStyle = b.hit ? '#888' : `hsl(${45 + pulse * 30}, 100%, 55%)`;
-      roundRect(ctx, sx, sy, TILE, TILE, 6);
-      ctx.fill();
-      outline(ctx);
-      roundRect(ctx, sx, sy, TILE, TILE, 6);
-      outline(ctx);
-
-      // "?" text or empty
-      ctx.font = `bold ${TILE * 0.6}px 'Fredoka One', cursive`;
-      ctx.fillStyle = b.hit ? '#555' : '#fff';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 3;
-      ctx.strokeText(b.hit ? '' : '?', sx + TILE/2, sy + TILE/2);
-      ctx.fillText(b.hit ? '' : '?', sx + TILE/2, sy + TILE/2);
-
-    } else if (b.type === 'brick') {
-      ctx.fillStyle = '#c0522a';
-      roundRect(ctx, sx, sy, TILE, TILE, 4);
-      ctx.fill();
-      outline(ctx);
-      roundRect(ctx, sx, sy, TILE, TILE, 4);
-      outline(ctx);
-
-      // Brick pattern
-      ctx.strokeStyle = '#9b3a1a';
-      ctx.lineWidth = 2;
+    const sx=b.x-scrollX, sy=b.y+b.bounceY;
+    if (b.type==='question') {
+      ctx.fillStyle = b.hit ? '#888' : `hsl(${44+Math.sin(tick*6)*8},100%,52%)`;
+      roundRect(ctx,sx,sy,TILE,TILE,5); ctx.fill();
+      ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=3;
+      roundRect(ctx,sx,sy,TILE,TILE,5); ctx.stroke();
+      ctx.font=`bold ${TILE*0.55}px 'Fredoka One',cursive`;
+      ctx.fillStyle=b.hit?'#555':'#fff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.strokeStyle='#000'; ctx.lineWidth=2.5;
+      const label = b.hit?'':'?';
+      ctx.strokeText(label,sx+TILE/2,sy+TILE/2); ctx.fillText(label,sx+TILE/2,sy+TILE/2);
+    } else {
+      ctx.fillStyle='#b94a1a';
+      roundRect(ctx,sx,sy,TILE,TILE,4); ctx.fill();
+      ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=2.5;
+      roundRect(ctx,sx,sy,TILE,TILE,4); ctx.stroke();
+      ctx.strokeStyle='#7a2c08'; ctx.lineWidth=2;
       ctx.beginPath();
-      ctx.moveTo(sx, sy + TILE/2); ctx.lineTo(sx + TILE, sy + TILE/2);
-      ctx.moveTo(sx + TILE/2, sy); ctx.lineTo(sx + TILE/2, sy + TILE/2);
-      ctx.moveTo(sx + TILE*0.25, sy + TILE/2); ctx.lineTo(sx + TILE*0.25, sy + TILE);
-      ctx.moveTo(sx + TILE*0.75, sy + TILE/2); ctx.lineTo(sx + TILE*0.75, sy + TILE);
+      ctx.moveTo(sx,sy+TILE/2); ctx.lineTo(sx+TILE,sy+TILE/2);
+      ctx.moveTo(sx+TILE*0.5,sy); ctx.lineTo(sx+TILE*0.5,sy+TILE/2);
+      ctx.moveTo(sx+TILE*0.25,sy+TILE/2); ctx.lineTo(sx+TILE*0.25,sy+TILE);
+      ctx.moveTo(sx+TILE*0.75,sy+TILE/2); ctx.lineTo(sx+TILE*0.75,sy+TILE);
       ctx.stroke();
     }
   }
 
-  // ── STRUCTURE BLOCKS ───────────────────────────────
+  // ── STRUCTURE BLOCKS ────────────────────────────
   function drawStructureBlock(ctx, b, scrollX) {
     if (!b.alive) return;
-    const sx = b.x - scrollX;
-
-    const colors = {
-      wood:  { fill: '#c8832a', dark: '#9b5e1a', grain: '#a06820' },
-      stone: { fill: '#8e8e8e', dark: '#666',    grain: '#7a7a7a' },
-      glass: { fill: 'rgba(180,230,255,0.7)', dark: '#6ab4cc', grain: 'rgba(255,255,255,0.4)' }
-    };
-    const c = colors[b.type] || colors.wood;
-
-    if (b.hitFlash > 0) {
-      ctx.fillStyle = '#fff';
-    } else {
-      ctx.fillStyle = c.fill;
+    const sx=b.x-scrollX;
+    const cols = { wood:{f:'#c8832a',g:'#a06820'}, stone:{f:'#8e8e8e',g:'#7a7a7a'}, glass:{f:'rgba(180,230,255,0.7)',g:'rgba(255,255,255,0.4)'} };
+    const c = cols[b.type]||cols.wood;
+    ctx.fillStyle = b.hitFlash>0?'#fff':c.f;
+    roundRect(ctx,sx,b.y,b.w,b.h,4); ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.3)'; ctx.lineWidth=1.5;
+    if (b.type==='wood') {
+      for (let i=1;i<3;i++){ctx.beginPath();ctx.moveTo(sx,b.y+b.h*i/3);ctx.lineTo(sx+b.w,b.y+b.h*i/3);ctx.stroke();}
+    } else if (b.type==='stone') {
+      ctx.beginPath();ctx.moveTo(sx+b.w/2,b.y);ctx.lineTo(sx+b.w/2,b.y+b.h);
+      ctx.moveTo(sx,b.y+b.h/2);ctx.lineTo(sx+b.w,b.y+b.h/2);ctx.stroke();
     }
-    roundRect(ctx, sx, b.y, b.w, b.h, 5);
-    ctx.fill();
-
-    // Grain lines
-    ctx.strokeStyle = c.grain;
-    ctx.lineWidth = 2;
-    if (b.type === 'wood') {
-      for (let i = 1; i < 3; i++) {
-        ctx.beginPath();
-        ctx.moveTo(sx, b.y + b.h * i / 3);
-        ctx.lineTo(sx + b.w, b.y + b.h * i / 3);
-        ctx.stroke();
-      }
-    } else if (b.type === 'stone') {
-      ctx.beginPath();
-      ctx.moveTo(sx + b.w/2, b.y); ctx.lineTo(sx + b.w/2, b.y + b.h);
-      ctx.moveTo(sx, b.y + b.h/2); ctx.lineTo(sx + b.w, b.y + b.h/2);
-      ctx.stroke();
+    if (b.crackLevel>0) {
+      ctx.strokeStyle='rgba(0,0,0,0.55)'; ctx.lineWidth=b.crackLevel;
+      ctx.beginPath();ctx.moveTo(sx+b.w*0.3,b.y+b.h*0.2);ctx.lineTo(sx+b.w*0.5,b.y+b.h*0.5);ctx.lineTo(sx+b.w*0.7,b.y+b.h*0.8);ctx.stroke();
+      if(b.crackLevel>1){ctx.beginPath();ctx.moveTo(sx+b.w*0.6,b.y+b.h*0.1);ctx.lineTo(sx+b.w*0.4,b.y+b.h*0.6);ctx.stroke();}
     }
-
-    // Cracks
-    if (b.crackLevel > 0) {
-      ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-      ctx.lineWidth = b.crackLevel;
-      ctx.beginPath();
-      ctx.moveTo(sx + b.w * 0.3, b.y + b.h * 0.2);
-      ctx.lineTo(sx + b.w * 0.5, b.y + b.h * 0.5);
-      ctx.lineTo(sx + b.w * 0.7, b.y + b.h * 0.8);
-      ctx.stroke();
-      if (b.crackLevel > 1) {
-        ctx.beginPath();
-        ctx.moveTo(sx + b.w * 0.6, b.y + b.h * 0.1);
-        ctx.lineTo(sx + b.w * 0.4, b.y + b.h * 0.6);
-        ctx.stroke();
-      }
-    }
-
-    outline(ctx, '#1a1a2e', 2.5);
-    roundRect(ctx, sx, b.y, b.w, b.h, 5);
-    outline(ctx, '#1a1a2e', 2.5);
+    ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=2.2;
+    roundRect(ctx,sx,b.y,b.w,b.h,4); ctx.stroke();
   }
 
-  // ── COIN ───────────────────────────────────────────
+  // ── COIN ────────────────────────────────────────
   function drawCoin(ctx, coin, scrollX, tick) {
     if (coin.collected) return;
-    const sx = coin.x - scrollX;
-    const sy = coin.y - Math.sin(tick * 3 + coin.bobOffset) * 5;
-    const r = 12;
-
-    // Glow
-    const glow = ctx.createRadialGradient(sx + r, sy + r, 2, sx + r, sy + r, r + 6);
-    glow.addColorStop(0, 'rgba(255,215,0,0.4)');
-    glow.addColorStop(1, 'rgba(255,215,0,0)');
-    ctx.fillStyle = glow;
-    ctx.fillRect(sx - 6, sy - 6, (r + 6) * 2, (r + 6) * 2);
-
-    // Coin body (spinning effect via squish)
-    const squish = Math.abs(Math.sin(tick * 4 + coin.bobOffset)) * 0.5 + 0.5;
-    ctx.save();
-    ctx.translate(sx + r, sy + r);
-    ctx.scale(squish, 1);
-    ctx.fillStyle = '#ffd700';
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
-    outline(ctx, '#1a1a2e', 2.5);
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
-    outline(ctx, '#1a1a2e', 2.5);
-
-    // Inner ring
-    ctx.strokeStyle = '#ffe066';
-    ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(0, 0, r * 0.6, 0, Math.PI * 2); ctx.stroke();
+    const sx=coin.x-scrollX, sy=coin.y-Math.sin(tick*3+coin.bobOffset)*5;
+    const squish=Math.abs(Math.sin(tick*4+coin.bobOffset))*0.55+0.45;
+    ctx.save(); ctx.translate(sx+11,sy+11); ctx.scale(squish,1);
+    const g=ctx.createRadialGradient(0,0,2,0,0,11);
+    g.addColorStop(0,'#ffe066'); g.addColorStop(1,'#ffd700');
+    ctx.fillStyle=g;
+    ctx.beginPath(); ctx.arc(0,0,11,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#c8a000'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.arc(0,0,11,0,Math.PI*2); ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(-2,-2,5,0,Math.PI*2); ctx.stroke();
     ctx.restore();
   }
 
-  // ── SLINGSHOT ──────────────────────────────────────
-  function drawSlingshot(ctx, s, scrollX, playerNear, charge) {
-    const sx = s.x - scrollX;
-    const sy = s.y;
-
-    // Fork base
-    ctx.fillStyle = '#7b4a1a';
-    ctx.strokeStyle = '#1a1a2e';
-    ctx.lineWidth = 4;
-
-    // Main pole
-    ctx.fillRect(sx + 20, sy, 8, s.h);
-    outline(ctx);
-    ctx.fillRect(sx + 20, sy, 8, s.h);
-    outline(ctx);
-
-    // Left arm
-    ctx.beginPath();
-    ctx.moveTo(sx + 24, sy + 28);
-    ctx.quadraticCurveTo(sx + 2, sy + 8, sx + 4, sy - 10);
-    ctx.lineWidth = 7;
-    ctx.strokeStyle = '#7b4a1a';
-    ctx.stroke();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#1a1a2e';
-    ctx.stroke();
-
-    // Right arm
-    ctx.beginPath();
-    ctx.moveTo(sx + 24, sy + 28);
-    ctx.quadraticCurveTo(sx + 46, sy + 8, sx + 44, sy - 10);
-    ctx.lineWidth = 7;
-    ctx.strokeStyle = '#7b4a1a';
-    ctx.stroke();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = '#1a1a2e';
-    ctx.stroke();
-
+  // ── SLINGSHOT ───────────────────────────────────
+  function drawSlingshot(ctx, s, scrollX, nearPlayer, charge) {
+    const sx=s.x-scrollX, sy=s.y;
+    // Post
+    ctx.fillStyle='#7b4a1a'; ctx.strokeStyle='#4a2800'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.roundRect(sx+18,sy,12,s.h,3); ctx.fill(); ctx.stroke();
+    // Arms
+    for (const [tx,ty] of [[4,-8],[44,-8]]) {
+      ctx.beginPath(); ctx.moveTo(sx+24,sy+30); ctx.quadraticCurveTo(sx+tx,sy+10,sx+tx,sy+ty);
+      ctx.lineWidth=7; ctx.strokeStyle='#7b4a1a'; ctx.stroke();
+      ctx.lineWidth=2.5; ctx.strokeStyle='#4a2800'; ctx.stroke();
+    }
     // Rubber bands
-    if (playerNear) {
-      const bandTension = charge * 14;
-      ctx.strokeStyle = '#c8641a';
-      ctx.lineWidth = 3;
-
-      ctx.beginPath();
-      ctx.moveTo(sx + 4, sy - 10);
-      ctx.lineTo(sx + 24 - bandTension, sy + 18);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(sx + 44, sy - 10);
-      ctx.lineTo(sx + 24 + bandTension, sy + 18);
-      ctx.stroke();
-
-      // Prompt
-      if (charge === 0) {
-        ctx.font = "bold 14px 'Nunito', sans-serif";
-        ctx.fillStyle = '#fff';
-        ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 3;
-        ctx.textAlign = 'center';
-        ctx.strokeText('[F] Slingshot', sx + 24, sy - 22);
-        ctx.fillText('[F] Slingshot', sx + 24, sy - 22);
-      }
+    if (nearPlayer) {
+      const pull = charge * 16;
+      ctx.strokeStyle='#c05010'; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.moveTo(sx+4,sy-8); ctx.lineTo(sx+24-pull,sy+20); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(sx+44,sy-8); ctx.lineTo(sx+24+pull,sy+20); ctx.stroke();
+    }
+    // Prompt
+    if (nearPlayer && charge===0) {
+      ctx.font="bold 13px 'Nunito',sans-serif";
+      ctx.fillStyle='#fff'; ctx.strokeStyle='#000'; ctx.lineWidth=3;
+      ctx.textAlign='center';
+      ctx.strokeText('[F] Slingshot', sx+24, sy-18); ctx.fillText('[F] Slingshot', sx+24, sy-18);
+    }
+    // Charge bar
+    if (nearPlayer && charge>0) {
+      ctx.fillStyle='rgba(0,0,0,0.5)';
+      ctx.fillRect(sx-2, sy-30, 52, 10);
+      ctx.fillStyle=`hsl(${120-charge*120},100%,50%)`;
+      ctx.fillRect(sx-2, sy-30, 52*charge, 10);
+      ctx.strokeStyle='#fff'; ctx.lineWidth=1.5;
+      ctx.strokeRect(sx-2, sy-30, 52, 10);
     }
   }
 
-  // ── FLAG ───────────────────────────────────────────
+  // ── FLAG ────────────────────────────────────────
   function drawFlag(ctx, flag, scrollX, tick) {
-    const sx = flag.poleX - scrollX;
-    const topY = flag.y;
-
-    // Pole
-    ctx.fillStyle = '#aaa';
-    ctx.fillRect(sx - 4, topY, 8, flag.h);
-    ctx.strokeStyle = '#555';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(sx - 4, topY, 8, flag.h);
-
-    // Waving flag
-    const fy = topY + flag.slideY;
-    const wave = Math.sin(tick * 4) * 6;
-    ctx.fillStyle = '#ff4444';
-    ctx.beginPath();
-    ctx.moveTo(sx + 4, fy);
-    ctx.lineTo(sx + 44 + wave, fy + 12);
-    ctx.lineTo(sx + 4, fy + 28);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2; ctx.stroke();
-
-    // Pole ball
-    ctx.fillStyle = '#ffd700';
-    ctx.beginPath(); ctx.arc(sx, topY, 10, 0, Math.PI * 2); ctx.fill();
-    outline(ctx, '#1a1a2e', 3);
-    ctx.beginPath(); ctx.arc(sx, topY, 10, 0, Math.PI * 2);
-    outline(ctx, '#1a1a2e', 3);
+    const sx=flag.poleX-scrollX, ty=flag.y;
+    ctx.fillStyle='#aaa'; ctx.fillRect(sx-3,ty,6,flag.h);
+    ctx.strokeStyle='#666'; ctx.lineWidth=1.5; ctx.strokeRect(sx-3,ty,6,flag.h);
+    const fy=ty+flag.slideY, wave=Math.sin(tick*4)*5;
+    ctx.fillStyle='#e63946';
+    ctx.beginPath(); ctx.moveTo(sx+3,fy); ctx.lineTo(sx+38+wave,fy+10); ctx.lineTo(sx+3,fy+24); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle='#900'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#ffd700';
+    ctx.beginPath(); ctx.arc(sx,ty,8,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#a06000'; ctx.lineWidth=2; ctx.stroke();
   }
 
-  // ── PLAYER (Mario Bird) ─────────────────────────────
-  function drawPlayer(ctx, player, scrollX, tick) {
+  // ══════════════════════════════════════════════
+  // MARIO — Classic NES pixel-art style
+  // ══════════════════════════════════════════════
+  function drawMario(ctx, player, scrollX, tick) {
     const sx = player.x - scrollX;
     const sy = player.y;
-    const flash = player.invincible > 0 && Math.floor(tick * 10) % 2 === 0;
+    const flash = player.invincible>0 && Math.floor(tick*10)%2===0;
     if (flash) return;
 
     ctx.save();
-    if (!player.facingRight) {
-      ctx.translate(sx + player.w / 2, sy + player.h / 2);
-      ctx.scale(-1, 1);
-      ctx.translate(-(player.w / 2), -(player.h / 2));
+    ctx.translate(sx + player.w/2, sy + player.h/2);
+    if (!player.facingRight) ctx.scale(-1,1);
+
+    const W=player.w, H=player.h;
+    const x=-W/2, y=-H/2;
+
+    // ─ Pixel-art scale: each "pixel" = 4px ─
+    const P = 4;  // pixel size
+    const draw = (col, px2, py2, pw, ph) => {
+      ctx.fillStyle=col;
+      ctx.fillRect(x+px2*P, y+py2*P, pw*P, ph*P);
+    };
+
+    // PALETTE
+    const RED   = '#c01000'; // hat + shirt
+    const SKIN  = '#fc9838'; // face / hands
+    const BROWN = '#6c3c00'; // hair, mustache, shoes
+    const BLUE  = '#2038ac'; // overalls
+    const WHITE = '#ffffff';
+
+    // ── Hat (top 3 rows) ──
+    // Row 0: hat top
+    draw(RED,   2,0, 4, 1);
+    // Row 1: hat brim
+    draw(RED,   1,1, 6, 1);
+    // Row 2: hat brim bottom / hair
+    draw(BROWN, 0,2, 2, 1);
+    draw(RED,   2,2, 4, 1);
+    draw(SKIN,  6,2, 2, 1);
+
+    // ── Face (rows 3-5) ──
+    draw(SKIN,  1,3, 6, 1);
+    // Eyes + mustache row
+    draw(BROWN, 1,4, 2, 1); // left eye
+    draw(SKIN,  3,4, 1, 1);
+    draw(BROWN, 4,4, 2, 1); // right eye
+    // Nose row
+    draw(SKIN,  2,5, 4, 1);
+    // Mustache
+    draw(BROWN, 1,5, 1, 1);
+    draw(BROWN, 5,5, 2, 1);
+
+    // ── Body — overalls + shirt (rows 6-8) ──
+    draw(RED,   2,6, 4, 1); // shirt collar
+    draw(BLUE,  1,7, 6, 1); // overalls top
+    draw(BLUE,  0,8, 8, 1); // overalls wide
+
+    // Overalls buttons
+    draw(WHITE, 2,6, 1, 1);
+    draw(WHITE, 5,6, 1, 1);
+
+    // ── Arms (rows 6-8) ──
+    if (player.state==='run' && player.runFrame%2===1) {
+      // Pumping arms
+      draw(RED,  0,6, 1, 2); // left arm up
+      draw(RED,  7,7, 1, 2); // right arm down
+      draw(SKIN, 0,8, 1, 1); draw(SKIN, 7,9, 1, 1); // hands
+    } else if (player.state==='jump') {
+      draw(RED,  0,5, 1, 3); // arms raised
+      draw(RED,  7,5, 1, 3);
+      draw(SKIN, 0,8, 1, 1); draw(SKIN, 7,8, 1, 1);
     } else {
-      ctx.translate(sx, sy);
+      draw(RED,  0,7, 1, 2); // arms down
+      draw(RED,  7,7, 1, 2);
+      draw(SKIN, 0,9, 1, 1); draw(SKIN, 7,9, 1, 1);
     }
 
-    const x = 0, y = 0, w = player.w, h = player.h;
-
-    // Body — round bird shape
-    const bobY = player.state === 'idle' ? Math.sin(tick * 3) * 2 : 0;
-    ctx.fillStyle = '#e63946';
-    ctx.beginPath();
-    ctx.arc(w / 2, h / 2 + bobY, h * 0.48, 0, Math.PI * 2);
-    ctx.fill();
-    outline(ctx, '#1a1a2e', 3);
-    ctx.beginPath(); ctx.arc(w/2, h/2 + bobY, h*0.48, 0, Math.PI*2);
-    outline(ctx, '#1a1a2e', 3);
-
-    // Belly
-    ctx.fillStyle = '#ff9999';
-    ctx.beginPath();
-    ctx.ellipse(w/2, h*0.62 + bobY, w*0.28, h*0.22, 0, 0, Math.PI*2);
-    ctx.fill();
-
-    // Mario hat
-    ctx.fillStyle = '#e63946';
-    ctx.fillRect(w*0.1, y + bobY - 4, w*0.8, h*0.28);
-    outline(ctx, '#1a1a2e', 2.5);
-    ctx.fillRect(w*0.1, y + bobY - 4, w*0.8, h*0.28);
-    outline(ctx, '#1a1a2e', 2.5);
-    // Hat brim
-    ctx.fillStyle = '#e63946';
-    ctx.fillRect(x - 4, y + h*0.22 + bobY, w + 8, h*0.1);
-    outline(ctx, '#1a1a2e', 2.5);
-    ctx.fillRect(x - 4, y + h*0.22 + bobY, w + 8, h*0.1);
-    outline(ctx, '#1a1a2e', 2.5);
-    // M on hat
-    ctx.font = `bold ${h * 0.18}px 'Fredoka One', cursive`;
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 2;
-    ctx.strokeText('M', w/2, y + h*0.15 + bobY);
-    ctx.fillText('M', w/2, y + h*0.15 + bobY);
-
-    // Eyes
-    const eyeY = h*0.44 + bobY;
-    const brow = player.state === 'jump' ? -3 : 0;
-    // Angry brows
-    ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(w*0.5, eyeY - 14 + brow);
-    ctx.lineTo(w*0.72, eyeY - 10 + brow);
-    ctx.stroke();
-    eyeball(ctx, w*0.62, eyeY, 7, 1, 1);
-
-    // Beak
-    ctx.fillStyle = '#ffc107';
-    ctx.beginPath();
-    ctx.moveTo(w*0.68, h*0.54 + bobY);
-    ctx.lineTo(w*0.92, h*0.50 + bobY);
-    ctx.lineTo(w*0.68, h*0.62 + bobY);
-    ctx.closePath(); ctx.fill();
-    outline(ctx, '#1a1a2e', 2);
-    ctx.beginPath();
-    ctx.moveTo(w*0.68, h*0.54 + bobY);
-    ctx.lineTo(w*0.92, h*0.50 + bobY);
-    ctx.lineTo(w*0.68, h*0.62 + bobY);
-    ctx.closePath();
-    outline(ctx, '#1a1a2e', 2);
-
-    // Tail (jump squish)
-    if (player.state === 'jump' || player.state === 'fall') {
-      ctx.fillStyle = '#c62828';
-      ctx.beginPath();
-      ctx.moveTo(w*0.1, h*0.7 + bobY);
-      ctx.lineTo(-6, h*0.9 + bobY);
-      ctx.lineTo(w*0.3, h*0.8 + bobY);
-      ctx.closePath(); ctx.fill();
-      outline(ctx, '#1a1a2e', 2);
+    // ── Legs / shoes (rows 9-11) ──
+    const legOff = player.state==='run' ? (player.runFrame%2)*2 : 0;
+    draw(BLUE,   1,9, 3, 1); draw(BLUE,   4,9, 3, 1);
+    draw(BROWN,  1,10,3,1);  draw(BROWN,  4,10,3,1);
+    // Shoes — walk animation
+    if (player.state==='run') {
+      if (player.runFrame%4 < 2) {
+        draw(BROWN, 0,11, 3, 1); draw(BROWN, 4,11, 4, 1);
+      } else {
+        draw(BROWN, 1,11, 4, 1); draw(BROWN, 5,11, 2, 1);
+      }
+    } else {
+      draw(BROWN, 1,11, 6, 1);
     }
 
-    // Feet
-    ctx.fillStyle = '#ffc107';
-    ctx.beginPath(); ctx.ellipse(w*0.35, h + bobY, 10, 7, 0.2, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(w*0.65, h + bobY, 10, 7, -0.2, 0, Math.PI*2); ctx.fill();
-    outline(ctx, '#1a1a2e', 2);
-
-    // Slingshot charge indicator
-    if (player.inSlingshot && player.slingshotCharge > 0) {
-      ctx.fillStyle = `hsl(${60 - player.slingshotCharge * 60}, 100%, 55%)`;
-      ctx.globalAlpha = 0.7;
-      ctx.beginPath(); ctx.arc(w/2, h/2, h/2 + 8 + player.slingshotCharge * 10, 0, Math.PI*2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
+    // Slingshot charge glow
+    if (player.inSlingshot && player.slingshotCharge>0) {
+      ctx.globalAlpha=0.5;
+      ctx.fillStyle=`hsl(${60-player.slingshotCharge*60},100%,55%)`;
+      ctx.beginPath(); ctx.arc(0,0,H*0.55+player.slingshotCharge*14,0,Math.PI*2); ctx.fill();
+      ctx.globalAlpha=1;
     }
 
     ctx.restore();
   }
 
-  // ── PIG ────────────────────────────────────────────
+  // ══════════════════════════════════════════════
+  // PIG RENDER
+  // ══════════════════════════════════════════════
   function drawPig(ctx, pig, scrollX, tick) {
     if (!pig.alive) {
-      if (pig.dieTimer > 1.2) return;
-      // Dead pig — tumbling
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, 1 - pig.dieTimer / 1.2);
-      ctx.translate(pig.cx - scrollX, pig.cy);
-      ctx.rotate(pig.dieTimer * 5);
-      _drawPigBody(ctx, pig, 0, 0, true);
-      ctx.restore();
-      return;
+      if (pig.dieTimer>1.4) return;
+      ctx.save(); ctx.globalAlpha=Math.max(0,1-pig.dieTimer/1.4);
+      ctx.translate(pig.cx-scrollX, pig.cy);
+      ctx.rotate(pig.dieTimer*6);
+      _pigBody(ctx, pig, 0, 0, true);
+      ctx.restore(); return;
     }
-
-    const sx = pig.x - scrollX;
-    const flash = pig.hitFlash > 0 && Math.floor(tick * 12) % 2 === 0;
-
     ctx.save();
-    ctx.translate(sx + pig.w/2, pig.y + pig.h/2);
-    if (!pig.facingRight) ctx.scale(-1, 1);
-
-    if (flash) ctx.filter = 'brightness(3)';
-
-    _drawPigBody(ctx, pig, 0, 0, false);
+    ctx.translate(pig.cx-scrollX, pig.cy);
+    if (!pig.facingRight) ctx.scale(-1,1);
+    if (pig.hitFlash>0) ctx.filter='brightness(3)';
+    _pigBody(ctx, pig, 0, 0, false);
     ctx.restore();
   }
 
-  function _drawPigBody(ctx, pig, cx, cy, isDead) {
-    const r = pig.w * 0.5;
-    const wobble = isDead ? 0 : Math.sin(Date.now() / 300) * 1.5;
+  function _pigBody(ctx, pig, cx, cy, dead) {
+    const r=pig.w*0.5;
+    const bob = dead?0:Math.sin(Date.now()/280)*1.5;
 
-    // Body
-    ctx.fillStyle = '#57cc57';
-    ctx.beginPath(); ctx.arc(cx, cy + wobble, r, 0, Math.PI*2); ctx.fill();
-    outline(ctx, '#1a1a2e', 3);
-    ctx.beginPath(); ctx.arc(cx, cy + wobble, r, 0, Math.PI*2);
-    outline(ctx, '#1a1a2e', 3);
+    ctx.fillStyle='#57cc57';
+    ctx.beginPath(); ctx.arc(cx,cy+bob,r,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.arc(cx,cy+bob,r,0,Math.PI*2); ctx.stroke();
 
-    // Belly highlight
-    ctx.fillStyle = '#7fff7f';
-    ctx.beginPath();
-    ctx.ellipse(cx + r*0.15, cy + r*0.2 + wobble, r*0.45, r*0.4, -0.2, 0, Math.PI*2);
-    ctx.fill();
+    // Belly
+    ctx.fillStyle='#7fff7f';
+    ctx.beginPath(); ctx.ellipse(cx+r*0.15,cy+r*0.2+bob,r*0.42,r*0.38,-0.2,0,Math.PI*2); ctx.fill();
 
     // Ears
-    ctx.fillStyle = '#3a8f3a';
-    ctx.beginPath(); ctx.ellipse(cx - r*0.6, cy - r*0.7 + wobble, r*0.28, r*0.22, -0.4, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(cx + r*0.6, cy - r*0.7 + wobble, r*0.28, r*0.22, 0.4, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#3a8f3a';
+    ctx.beginPath(); ctx.ellipse(cx-r*0.6,cy-r*0.68+bob,r*0.26,r*0.2,-0.4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx+r*0.6,cy-r*0.68+bob,r*0.26,r*0.2,0.4,0,Math.PI*2); ctx.fill();
 
-    // Helmet for helmet/king pig
-    if (pig.type === 'helmet' || pig.type === 'king') {
-      ctx.fillStyle = pig.type === 'king' ? '#ffd700' : '#aaa';
-      ctx.beginPath();
-      ctx.arc(cx, cy - r*0.3 + wobble, r*0.85, Math.PI, 0);
-      ctx.fill();
-      outline(ctx, '#1a1a2e', 2.5);
-      ctx.beginPath();
-      ctx.arc(cx, cy - r*0.3 + wobble, r*0.85, Math.PI, 0);
-      outline(ctx, '#1a1a2e', 2.5);
-
-      if (pig.type === 'king') {
-        // Crown points
-        ctx.fillStyle = '#ffd700';
-        for (let i = 0; i < 3; i++) {
-          const cx2 = cx - r*0.5 + i * r*0.5;
-          ctx.beginPath();
-          ctx.moveTo(cx2 - 6, cy - r*0.9 + wobble);
-          ctx.lineTo(cx2, cy - r*1.3 + wobble);
-          ctx.lineTo(cx2 + 6, cy - r*0.9 + wobble);
-          ctx.closePath(); ctx.fill();
-          outline(ctx, '#1a1a2e', 2);
+    // Helmet/crown
+    if (pig.type==='helmet'||pig.type==='king') {
+      ctx.fillStyle=pig.type==='king'?'#ffd700':'#aaa';
+      ctx.beginPath(); ctx.arc(cx,cy-r*0.28+bob,r*0.82,Math.PI,0); ctx.fill();
+      ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(cx,cy-r*0.28+bob,r*0.82,Math.PI,0); ctx.stroke();
+      if (pig.type==='king') {
+        ctx.fillStyle='#ffd700';
+        for (let i=0;i<3;i++) {
+          const px2=cx-r*0.5+i*r*0.5;
+          ctx.beginPath(); ctx.moveTo(px2-5,cy-r*0.88+bob); ctx.lineTo(px2,cy-r*1.28+bob); ctx.lineTo(px2+5,cy-r*0.88+bob); ctx.closePath(); ctx.fill();
         }
       }
     }
 
     // Eyes
-    const eyeY = cy - r*0.15 + wobble;
-    const angry = pig.hp < pig.maxHp;
+    const ey=cy-r*0.14+bob;
+    const angry=pig.hp<pig.maxHp;
     if (angry) {
-      ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(cx - r*0.5, eyeY - 10); ctx.lineTo(cx - r*0.1, eyeY - 6); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx + r*0.5, eyeY - 10); ctx.lineTo(cx + r*0.1, eyeY - 6); ctx.stroke();
+      ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.moveTo(cx-r*0.52,ey-10); ctx.lineTo(cx-r*0.1,ey-6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx+r*0.52,ey-10); ctx.lineTo(cx+r*0.1,ey-6); ctx.stroke();
     }
-    eyeball(ctx, cx - r*0.35, eyeY, r*0.22, -1, 1);
-    eyeball(ctx, cx + r*0.35, eyeY, r*0.22, 1, 1);
+    // Eyeballs
+    for (const [ex,pu] of [[cx-r*0.34,[-1,1]],[cx+r*0.34,[1,1]]]) {
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(ex,ey,r*0.22,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(ex,ey,r*0.22,0,Math.PI*2); ctx.stroke();
+      ctx.fillStyle='#1a1a2e'; ctx.beginPath(); ctx.arc(ex+pu[0]*r*0.08,ey+pu[1]*r*0.06,r*0.12,0,Math.PI*2); ctx.fill();
+    }
 
     // Snout
-    ctx.fillStyle = '#3a8f3a';
-    ctx.beginPath(); ctx.ellipse(cx, cy + r*0.3 + wobble, r*0.38, r*0.25, 0, 0, Math.PI*2); ctx.fill();
-    outline(ctx, '#1a1a2e', 2);
-    // Nostrils
-    ctx.fillStyle = '#1a1a2e';
-    ctx.beginPath(); ctx.arc(cx - r*0.15, cy + r*0.28 + wobble, r*0.06, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(cx + r*0.15, cy + r*0.28 + wobble, r*0.06, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle='#3a8f3a';
+    ctx.beginPath(); ctx.ellipse(cx,cy+r*0.3+bob,r*0.36,r*0.24,0,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle='#1a1a2e'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#1a5c1a';
+    ctx.beginPath(); ctx.arc(cx-r*0.13,cy+r*0.28+bob,r*0.06,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx+r*0.13,cy+r*0.28+bob,r*0.06,0,Math.PI*2); ctx.fill();
 
-    // HP bar for fat/king pigs
-    if ((pig.type === 'fat' || pig.type === 'king') && pig.hp > 0 && pig.hp < pig.maxHp) {
-      const bw = r * 2.2, bh = 6;
-      const bx = cx - bw/2, by = cy - r - 16;
-      ctx.fillStyle = '#333';
-      ctx.fillRect(bx, by, bw, bh);
-      ctx.fillStyle = pig.type === 'king' ? '#ffd700' : '#ff4444';
-      ctx.fillRect(bx, by, bw * (pig.hp / pig.maxHp), bh);
-      ctx.strokeStyle = '#1a1a2e'; ctx.lineWidth = 1.5;
-      ctx.strokeRect(bx, by, bw, bh);
+    // HP bar for fat/king
+    if ((pig.type==='fat'||pig.type==='king')&&pig.hp>0&&pig.hp<pig.maxHp) {
+      const bw=r*2.2,bh=5,bx=cx-bw/2,by=cy-r-14;
+      ctx.fillStyle='#333'; ctx.fillRect(bx,by,bw,bh);
+      ctx.fillStyle=pig.type==='king'?'#ffd700':'#f44';
+      ctx.fillRect(bx,by,bw*(pig.hp/pig.maxHp),bh);
+      ctx.strokeStyle='#000'; ctx.lineWidth=1; ctx.strokeRect(bx,by,bw,bh);
     }
 
-    // Boss crown floating
     if (pig.isBoss) {
-      ctx.font = `${r * 0.8}px serif`;
-      ctx.textAlign = 'center';
-      ctx.fillText('👑', cx, cy - r * 1.8 + Math.sin(Date.now()/400) * 5 + wobble);
+      ctx.font=`${r*0.75}px serif`; ctx.textAlign='center';
+      ctx.fillText('👑',cx,cy-r*1.85+Math.sin(Date.now()/400)*5+bob);
     }
   }
 
-  // ── MAIN RENDER FUNCTION ───────────────────────────
+  // ══════════════════════════════════════════════
+  // MAIN RENDER
+  // ══════════════════════════════════════════════
   function render(ctx, cw, ch, state, scrollX, tick) {
     const { level, player, pigs, coins, blocks, structureBlocks,
             slingshotObjs, flag, particles, floatingText, groundY } = state;
 
-    ctx.clearRect(0, 0, cw, ch);
+    ctx.clearRect(0,0,cw,ch);
 
-    // 1. Background
     drawBackground(ctx, cw, ch, scrollX, level, tick);
-
-    // 2. Ground
     drawGround(ctx, cw, ch, scrollX, level, groundY);
 
-    // 3. Platforms
     for (const p of level.platforms) {
       if (p.isGround) continue;
-      if (p.x - scrollX > cw + 100 || p.x + p.w - scrollX < -100) continue;
+      if (p.x-scrollX > cw+120 || p.x+p.w-scrollX < -120) continue;
       drawPlatform(ctx, p, scrollX);
     }
 
-    // 4. Blocks
-    for (const b of blocks) {
-      if (b.destroyed) continue;
-      drawBlock(ctx, b, scrollX, tick);
+    for (const b of blocks) if (!b.destroyed) drawBlock(ctx, b, scrollX, tick);
+    for (const b of structureBlocks) if (b.alive) {
+      if (b.x-scrollX<cw+100 && b.x+b.w-scrollX>-100) drawStructureBlock(ctx, b, scrollX);
     }
+    for (const c of coins) if (!c.collected) drawCoin(ctx, c, scrollX, tick);
 
-    // 5. Structure blocks
-    for (const b of structureBlocks) {
-      if (!b.alive) continue;
-      if (b.x - scrollX > cw + 100 || b.x + b.w - scrollX < -100) continue;
-      drawStructureBlock(ctx, b, scrollX);
-    }
-
-    // 6. Coins
-    for (const c of coins) {
-      if (!c.collected) drawCoin(ctx, c, scrollX, tick);
-    }
-
-    // 7. Slingshots
     for (const s of slingshotObjs) {
-      const charge = player.nearSlingshot === s ? player.slingshotCharge : 0;
-      drawSlingshot(ctx, s, scrollX, player.nearSlingshot === s || player.inSlingshot, charge);
+      const near = player.nearSlingshot===s || player.inSlingshot;
+      const charge = (player.inSlingshot && player.nearSlingshot===s) ? player.slingshotCharge : 0;
+      drawSlingshot(ctx, s, scrollX, near, charge);
     }
 
-    // 8. Flag
     drawFlag(ctx, flag, scrollX, tick);
 
-    // 9. Pigs
     for (const pig of pigs) drawPig(ctx, pig, scrollX, tick);
 
-    // 10. Player
-    drawPlayer(ctx, player, scrollX, tick);
+    drawMario(ctx, player, scrollX, tick);
 
-    // 11. Particles
     particles.draw(ctx);
-
-    // 12. Floating text
     floatingText.draw(ctx);
   }
 
