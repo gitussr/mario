@@ -42,11 +42,15 @@ function makeLevel(cfg) {
 }
 
 // ── HELPER: Ground-relative y ──────────────────────────
+// gy(n) stores a sentinel resolved to real pixels at load time
 // gy(0) = ground surface, gy(1) = 1 tile above, etc.
-// Canvas height assumed 650px (set in game.js)
-const CH = 650;
-const gy = n => CH - GH - (n * TILE);
+const GY_TAG = '__GY__';
+function gy(n) { return { [GY_TAG]: true, n }; }
 const gx = n => n * TILE;
+function resolveY(val, groundY) {
+  if (val && val[GY_TAG]) return groundY - (val.n * TILE);
+  return val;
+}
 
 // ══════════════════════════════════════════════════════
 // LEVEL 1 — "Green Hills" (Easy)

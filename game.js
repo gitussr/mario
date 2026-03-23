@@ -42,16 +42,15 @@ const Game = (() => {
   }
 
   function resizeCanvas() {
-    const screen = document.getElementById('screen-game');
-    const hud    = document.getElementById('hud');
+    const hud = document.getElementById('hud');
+    const hudH = hud ? hud.offsetHeight : 56;
     cw = window.innerWidth;
-    ch = window.innerHeight - (hud ? hud.offsetHeight : 56);
+    ch = window.innerHeight - hudH;
+    if (ch < 200) ch = window.innerHeight - 56; // fallback if hud not rendered yet
     canvas.width  = cw;
     canvas.height = ch;
     if (gameState) {
-      // Recalculate ground reference
       gameState.groundY = ch - GH;
-      // Re-floor player if needed
       if (gameState.player) {
         gameState.player.y = Math.min(gameState.player.y, gameState.groundY - gameState.player.h);
       }
@@ -70,6 +69,9 @@ const Game = (() => {
     floatText.items = [];
     scrollX = 0;
     tick = 0;
+
+    // Force correct canvas size BEFORE building level objects
+    resizeCanvas();
 
     // Build live objects
     const objs = buildLevelObjects(levelData, ch);
@@ -93,6 +95,7 @@ const Game = (() => {
     updateHUD();
 
     state = 'playing';
+    paused = false;
     Audio8bit.startBGM();
   }
 
@@ -137,7 +140,7 @@ const Game = (() => {
   // UPDATE
   // ══════════════════════════════════════════════════
   function update(dt) {
-    if (!gameState || state !== 'playing') return;
+    if (!gameState || (state !== 'playing' && state !== 'dying' && state !== 'flagPole')) return;
 
     const { player, pigs, coins, blocks, structureBlocks,
             slingshotObjs, flag, level } = gameState;
@@ -182,17 +185,18 @@ const Game = (() => {
     }
 
     // Player death → game over / retry
-    if (!player.alive) {
-      player.y += player.vy * dt;
+    if (!player.alive && state === 'playing') {
+      state = 'dying';
+      player._deathTimer = 2.2;
+    }
+    if (state === 'dying') {
+      player.y  += player.vy * dt;
       player.vy += (level.gravity || 900) * dt;
-      // Show game over after delay
-      if (player.dieDelay === undefined) player.dieDelay = 2.5;
-      player.dieDelay -= dt;
-      if (player.dieDelay <= 0) {
+      player._deathTimer -= dt;
+      if (player._deathTimer <= 0) {
         if (player.lives > 0) {
-          // Respawn same level
-          setTimeout(() => showDeathRetry(), 100);
           state = 'dead';
+          loadLevel(currentLevel);
         } else {
           showGameOver();
           state = 'gameOver';
@@ -338,6 +342,7 @@ const Game = (() => {
     document.getElementById('game-over-overlay').classList.add('hidden');
     document.getElementById('level-complete-overlay').classList.add('hidden');
     paused = false;
+    state  = 'playing';
     loadLevel(currentLevel);
   }
 

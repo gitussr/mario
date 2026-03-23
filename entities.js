@@ -413,44 +413,55 @@ class Flag {
 function buildLevelObjects(levelData, canvasHeight) {
   const groundY = canvasHeight - GH;
 
-  // Platforms (static AABB)
-  const platforms = levelData.platforms.map(p => ({ ...p, isGround: false }));
+  // Helper: resolve gy() sentinel or plain number
+  const ry = val => (typeof resolveY === 'function') ? resolveY(val, groundY) : val;
+
+  // Platforms (static AABB) — resolve y values
+  const platforms = levelData.platforms.map(p => ({
+    ...p,
+    y: ry(p.y),
+    isGround: false
+  }));
   // Add the main ground floor
   platforms.push({ x: 0, y: groundY, w: levelData.width, h: GH, type: 'ground', isGround: true });
 
-  // Player
-  const player = new Player(levelData.startX, groundY - 60);
+  // Player — always spawn on ground surface
+  const player = new Player(levelData.startX, groundY - 52);
 
-  // Pigs (from level pigs array)
+  // Pigs — resolve y, default to sitting on ground
   const pigs = levelData.pigs.map(p => new Pig({
     ...p,
-    y: p.y !== undefined ? p.y : groundY - (p.hp > 3 ? 64 : 48)
+    x: p.x,
+    y: ry(p.y !== undefined ? p.y : groundY - 52)
   }));
 
-  // Coins
-  const coins = levelData.coins.map(c => new Coin(c.x, c.y));
+  // Coins — resolve y
+  const coins = levelData.coins.map(c => new Coin(c.x, ry(c.y)));
 
-  // Blocks
-  const blocks = levelData.blocks.map(b => new Block(b));
+  // Blocks — resolve y
+  const blocks = levelData.blocks.map(b => new Block({ ...b, y: ry(b.y) }));
 
   // Structures → flat arrays of StructureBlocks + embedded pigs
   const structureBlocks = [];
   for (const s of levelData.structures) {
+    const sy = ry(s.y);  // structure base Y (resolved)
     for (const b of s.blocks) {
       structureBlocks.push(new StructureBlock(
-        s.x + b.dx, s.y + b.dy, b.w || TILE, b.h || TILE, b.type
+        s.x + b.dx,
+        sy + b.dy,        // dy is always a plain pixel offset
+        b.w || TILE, b.h || TILE, b.type
       ));
     }
     for (const p of (s.pigs || [])) {
       pigs.push(new Pig({
         ...p,
         x: s.x + p.x,
-        y: s.y + p.y,
+        y: sy + p.y,      // p.y is a pixel offset relative to structure base
       }));
     }
   }
 
-  // Slingshots
+  // Slingshots — always on ground
   const slingshotObjs = levelData.slingshots.map(s => new Slingshot(s.x, groundY - 80));
 
   // Flag
