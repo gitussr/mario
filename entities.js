@@ -77,19 +77,9 @@ class Player {
       this.jumpHeld -= dt;
     } else { this.jumpHeld = 0; }
 
-    // Gravity
-    const gravity = level.gravity || 900;
-    this.vy = Math.min(this.vy + gravity * dt, this.maxFall);
+    // NOTE: gravity, X/Y movement, and collision are handled by Physics.update()
 
-    // Move X
-    this.x += this.vx * dt;
-    this.x = Math.max(0, this.x);
-
-    // Move Y
-    this.y += this.vy * dt;
-    this.onGround = false;
-
-    // Animation
+    // Animation state
     this._animate(dt);
 
     // Check slingshot proximity
