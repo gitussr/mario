@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🐦 Mario Birds — The Fusion Game</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: MAIN MENU
+════════════════════════════════════════════════ -->
+<div id="screen-menu" class="screen active">
+  <div class="menu-bg">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+    <div class="ground-strip"></div>
+    <!-- Decorative Characters -->
+    <div class="deco-mario"></div>
+    <div class="deco-pig"></div>
+  </div>
+
+  <div class="menu-content">
+    <div class="game-logo">
+      <span class="logo-bird">🐦</span>
+      <div class="logo-text">
+        <span class="logo-mario">MARIO</span>
+        <span class="logo-birds">BIRDS</span>
+      </div>
+      <span class="logo-star">⭐</span>
+    </div>
+    <p class="logo-sub">The Ultimate Fusion Adventure</p>
+
+    <div class="menu-buttons">
+      <button class="btn-main btn-play" onclick="showScreen('screen-levels')">
+        <span class="btn-icon">▶</span> PLAY
+      </button>
+      <button class="btn-main btn-how" onclick="showScreen('screen-howto')">
+        <span class="btn-icon">?</span> HOW TO PLAY
+      </button>
+      <button class="btn-main btn-credits" onclick="showScreen('screen-credits')">
+        <span class="btn-icon">★</span> CREDITS
+      </button>
+    </div>
+
+    <div class="high-score-banner">
+      <span>🏆 HIGH SCORE: <strong id="high-score-display">0</strong></span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: LEVEL SELECT
+════════════════════════════════════════════════ -->
+<div id="screen-levels" class="screen">
+  <div class="menu-bg">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="ground-strip"></div>
+  </div>
+
+  <div class="levels-content">
+    <h2 class="section-title">🗺️ CHOOSE YOUR LEVEL</h2>
+    <div class="levels-grid" id="levels-grid">
+      <!-- Populated by JS -->
+    </div>
+    <button class="btn-back" onclick="showScreen('screen-menu')">← BACK</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: HOW TO PLAY
+════════════════════════════════════════════════ -->
+<div id="screen-howto" class="screen">
+  <div class="menu-bg">
+    <div class="cloud cloud1"></div>
+    <div class="ground-strip"></div>
+  </div>
+  <div class="howto-content">
+    <h2 class="section-title">🎮 HOW TO PLAY</h2>
+    <div class="howto-cards">
+      <div class="howto-card">
+        <div class="howto-icon">⬅️➡️</div>
+        <h3>Move</h3>
+        <p>Arrow Keys or <strong>A / D</strong> to run left & right</p>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">⬆️</div>
+        <h3>Jump</h3>
+        <p><strong>Space</strong> or <strong>Up Arrow</strong> to jump. Hold longer for higher jumps!</p>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">🐷</div>
+        <h3>Stomp Pigs</h3>
+        <p>Land on top of <strong>Pig enemies</strong> to defeat them. Don't touch their sides!</p>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">🐦</div>
+        <h3>Slingshot</h3>
+        <p>Stand near a <strong>slingshot</strong>, press <strong>F</strong> to launch yourself at pig structures!</p>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">💰</div>
+        <h3>Collect Coins</h3>
+        <p>Grab all <strong>coins</strong> for bonus points. Hit question blocks!</p>
+      </div>
+      <div class="howto-card">
+        <div class="howto-icon">🏁</div>
+        <h3>Reach the Flag</h3>
+        <p>Get to the <strong>end flag</strong> to complete the level!</p>
+      </div>
+    </div>
+    <button class="btn-back" onclick="showScreen('screen-menu')">← BACK</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: CREDITS
+════════════════════════════════════════════════ -->
+<div id="screen-credits" class="screen">
+  <div class="menu-bg">
+    <div class="cloud cloud2"></div>
+    <div class="ground-strip"></div>
+  </div>
+  <div class="credits-content">
+    <h2 class="section-title">⭐ CREDITS</h2>
+    <div class="credits-body">
+      <p>🎮 <strong>Mario Birds</strong> — A Fan Fusion Game</p>
+      <p>Inspired by <em>Super Mario Bros.</em> by Nintendo</p>
+      <p>and <em>Angry Birds</em> by Rovio Entertainment</p>
+      <hr/>
+      <p>🎵 Sound — Web Audio API (procedural 8-bit)</p>
+      <p>🎨 Art — Pure CSS + Canvas rendering</p>
+      <p>💻 Built with — HTML5 · CSS3 · Vanilla JS</p>
+    </div>
+    <button class="btn-back" onclick="showScreen('screen-menu')">← BACK</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: GAME CANVAS
+════════════════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-block">
+      <span class="hud-label">🐦 MARIO BIRD</span>
+      <span class="hud-value" id="hud-score">000000</span>
+    </div>
+    <div class="hud-block hud-center">
+      <span class="hud-label">LEVEL</span>
+      <span class="hud-value" id="hud-level">1-1</span>
+    </div>
+    <div class="hud-block">
+      <span class="hud-label">❤️ LIVES</span>
+      <span class="hud-value" id="hud-lives">3</span>
+    </div>
+    <div class="hud-block">
+      <span class="hud-label">💰 COINS</span>
+      <span class="hud-value" id="hud-coins">0</span>
+    </div>
+    <div class="hud-block">
+      <span class="hud-label">⏱ TIME</span>
+      <span class="hud-value" id="hud-time">400</span>
+    </div>
+    <button class="hud-pause-btn" id="pause-btn" onclick="togglePause()">⏸</button>
+  </div>
+
+  <!-- Main Canvas -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Pause Overlay -->
+  <div id="pause-overlay" class="game-overlay hidden">
+    <div class="overlay-box">
+      <h2>⏸ PAUSED</h2>
+      <button class="btn-main btn-play" onclick="togglePause()">▶ RESUME</button>
+      <button class="btn-main btn-how" onclick="restartLevel()">🔄 RESTART</button>
+      <button class="btn-main btn-credits" onclick="quitToMenu()">🏠 MENU</button>
+    </div>
+  </div>
+
+  <!-- Level Complete Overlay -->
+  <div id="level-complete-overlay" class="game-overlay hidden">
+    <div class="overlay-box success-box">
+      <div class="complete-banner">🏁 LEVEL COMPLETE!</div>
+      <div class="complete-stats">
+        <div>Score: <strong id="complete-score">0</strong></div>
+        <div>Coins: <strong id="complete-coins">0</strong></div>
+        <div>Time Bonus: <strong id="complete-time">0</strong></div>
+      </div>
+      <div class="star-rating" id="star-rating">⭐⭐⭐</div>
+      <button class="btn-main btn-play" onclick="nextLevel()">NEXT LEVEL ▶</button>
+      <button class="btn-main btn-credits" onclick="quitToMenu()">🏠 MENU</button>
+    </div>
+  </div>
+
+  <!-- Game Over Overlay -->
+  <div id="game-over-overlay" class="game-overlay hidden">
+    <div class="overlay-box danger-box">
+      <div class="gameover-banner">💀 GAME OVER</div>
+      <div>Score: <strong id="gameover-score">0</strong></div>
+      <button class="btn-main btn-play" onclick="restartLevel()">🔄 TRY AGAIN</button>
+      <button class="btn-main btn-credits" onclick="quitToMenu()">🏠 MENU</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════════ -->
+<script src="js/audio.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/entities.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/physics.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+
+</body>
+</html>
