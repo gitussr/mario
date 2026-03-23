@@ -59,7 +59,7 @@ function coinArc(cx, n, baseH, peakExtra=2) {
 
 // ══════════════════════════════════════════════
 // LEVEL 1 — "World 1-1  Green Hills"
-// Tutorial-hard: gaps appear, pigs guard coins
+// Dense pigs, coins 2 tiles above each platform
 // Time: 260s  Quota: 15 coins
 // ══════════════════════════════════════════════
 const level1 = makeLevel({
@@ -110,35 +110,71 @@ const level1 = makeLevel({
     { x:4510, y:gy(7), type:'brick' },
   ],
 
+  // Coins placed 2 tiles above each platform top (platformH + 2)
   coins:[
-    // Coins above platforms — must jump for each
-    ...coinArc(390, 5, 8, 2),
-    ...coinArc(760, 5, 8, 2),
-    ...coinArc(1210, 5, 7, 2),
-    ...coinArc(1670, 5, 7, 2),
-    ...coinArc(2180, 5, 8, 2),
-    ...coinArc(2720, 5, 9, 3),
-    ...coinArc(2940, 5, 6, 2),
-    ...coinArc(3480, 5, 7, 2),
-    ...coinArc(4160, 5, 8, 2),
-    ...coinArc(4720, 5, 6, 2),
+    ...coinArc(392,  5, 5, 2),   // above platform gy(3) → coins at gy(5-7)
+    ...coinArc(608,  5, 7, 2),   // above platform gy(5) → coins at gy(7-9)
+    ...coinArc(768,  5, 5, 2),
+    ...coinArc(1032, 5, 7, 2),
+    ...coinArc(1248, 5, 6, 2),
+    ...coinArc(1498, 5, 8, 2),
+    ...coinArc(1722, 5, 6, 2),
+    ...coinArc(1948, 5, 5, 2),
+    ...coinArc(2222, 5, 7, 2),
+    ...coinArc(2498, 5, 6, 2),
+    ...coinArc(2748, 5, 8, 2),
+    ...coinArc(2972, 5, 5, 2),
+    ...coinArc(3248, 5, 7, 2),
+    ...coinArc(3498, 5, 6, 2),
+    ...coinArc(4198, 5, 7, 2),
+    ...coinArc(4748, 5, 5, 2),
   ],
 
+  // Dense pigs — ground level every ~150px + on every platform
   pigs:[
-    { x:500,  y:gy(0), type:'normal', hp:1 },
-    { x:800,  y:gy(0), type:'normal', hp:1 },
-    { x:1150, y:gy(0), type:'normal', hp:1 },
-    { x:1550, y:gy(0), type:'helmet', hp:2 },
-    { x:1850, y:gy(0), type:'normal', hp:1 },
-    { x:2100, y:gy(0), type:'helmet', hp:2 },
-    { x:2400, y:gy(0), type:'normal', hp:1 },
-    { x:2650, y:gy(0), type:'normal', hp:1 },
-    { x:3100, y:gy(0), type:'helmet', hp:2 },
-    { x:3400, y:gy(0), type:'normal', hp:1 },
-    { x:3650, y:gy(0), type:'helmet', hp:2 },
-    { x:4050, y:gy(0), type:'normal', hp:1 },
-    { x:4400, y:gy(0), type:'helmet', hp:2 },
-    { x:4660, y:gy(0), type:'normal', hp:1 },
+    // Ground patrol pigs
+    { x:260,  y:gy(0), type:'normal', hp:1 },
+    { x:420,  y:gy(0), type:'normal', hp:1 },
+    { x:580,  y:gy(0), type:'normal', hp:1 },
+    { x:740,  y:gy(0), type:'normal', hp:1 },
+    { x:900,  y:gy(0), type:'helmet', hp:2 },
+    { x:1060, y:gy(0), type:'normal', hp:1 },
+    { x:1180, y:gy(0), type:'normal', hp:1 },
+    { x:1340, y:gy(0), type:'helmet', hp:2 },
+    { x:1500, y:gy(0), type:'normal', hp:1 },
+    { x:1660, y:gy(0), type:'normal', hp:1 },
+    { x:1820, y:gy(0), type:'helmet', hp:2 },
+    { x:1980, y:gy(0), type:'normal', hp:1 },
+    { x:2140, y:gy(0), type:'normal', hp:1 },
+    { x:2300, y:gy(0), type:'helmet', hp:2 },
+    { x:2460, y:gy(0), type:'normal', hp:1 },
+    { x:2620, y:gy(0), type:'fat',    hp:3 },
+    { x:2780, y:gy(0), type:'normal', hp:1 },
+    { x:2940, y:gy(0), type:'helmet', hp:2 },
+    { x:3100, y:gy(0), type:'normal', hp:1 },
+    { x:3260, y:gy(0), type:'fat',    hp:3 },
+    { x:3420, y:gy(0), type:'helmet', hp:2 },
+    { x:3580, y:gy(0), type:'normal', hp:1 },
+    { x:3740, y:gy(0), type:'fat',    hp:3 },
+    { x:3900, y:gy(0), type:'normal', hp:1 },
+    { x:4060, y:gy(0), type:'helmet', hp:2 },
+    { x:4220, y:gy(0), type:'normal', hp:1 },
+    { x:4380, y:gy(0), type:'fat',    hp:3 },
+    { x:4540, y:gy(0), type:'helmet', hp:2 },
+    { x:4700, y:gy(0), type:'normal', hp:1 },
+    { x:4860, y:gy(0), type:'fat',    hp:3 },
+    { x:5020, y:gy(0), type:'helmet', hp:2 },
+    // Platform pigs — on top of elevated platforms
+    { x:590,  y:gy(6), type:'normal', hp:1 },   // on platform gy(5)
+    { x:990,  y:gy(6), type:'normal', hp:1 },
+    { x:1470, y:gy(7), type:'helmet', hp:2 },
+    { x:1680, y:gy(5), type:'normal', hp:1 },
+    { x:2180, y:gy(6), type:'helmet', hp:2 },
+    { x:2720, y:gy(7), type:'fat',    hp:3 },
+    { x:3220, y:gy(6), type:'normal', hp:1 },
+    { x:3720, y:gy(7), type:'helmet', hp:2 },
+    { x:4180, y:gy(6), type:'fat',    hp:3 },
+    { x:4480, y:gy(5), type:'normal', hp:1 },
   ],
 
   structures:[
@@ -147,10 +183,15 @@ const level1 = makeLevel({
       {dx:0,dy:-TILE*2,type:'wood',w:TILE*2,h:TILE*0.5}],
       pigs:[{x:TILE*0.3,y:-TILE*2.4,type:'normal',hp:1}]
     },
-    { x:3000, y:gy(0), blocks:[
+    { x:2800, y:gy(0), blocks:[
       {dx:0,dy:0,type:'stone',w:TILE,h:TILE*3},{dx:TILE*2,dy:0,type:'stone',w:TILE,h:TILE*3},
       {dx:0,dy:-TILE*3,type:'stone',w:TILE*3,h:TILE*0.6}],
       pigs:[{x:TILE*0.8,y:-TILE*3.5,type:'helmet',hp:2}]
+    },
+    { x:4100, y:gy(0), blocks:[
+      {dx:0,dy:0,type:'stone',w:TILE*2,h:TILE*3},{dx:TILE*3,dy:0,type:'stone',w:TILE*2,h:TILE*3},
+      {dx:0,dy:-TILE*3,type:'stone',w:TILE*5,h:TILE*0.6}],
+      pigs:[{x:TILE,y:-TILE*3.5,type:'fat',hp:3},{x:TILE*3,y:-TILE*3.5,type:'helmet',hp:2}]
     },
   ],
   slingshots:[{x:140,y:gy(0)},{x:1050,y:gy(0)},{x:2600,y:gy(0)},{x:4000,y:gy(0)}]
@@ -158,7 +199,7 @@ const level1 = makeLevel({
 
 // ══════════════════════════════════════════════
 // LEVEL 2 — "Narrow Cliffs"
-// Thin platforms, more pigs, longer gaps
+// Coins exactly 2 tiles above each platform top
 // Time: 240s  Quota: 20 coins
 // ══════════════════════════════════════════════
 const level2 = makeLevel({
@@ -167,91 +208,114 @@ const level2 = makeLevel({
   width:5800, timeLimit:240, coinQuota:20,
   flagX:5600,
 
+  // Platforms at gy(3)–gy(6); coins placed at platform_height + 2
   platforms:[
-    { x:280,  y:gy(4), w:96,  h:TILE, type:'grass' },
-    { x:460,  y:gy(6), w:72,  h:TILE, type:'grass' },
-    { x:640,  y:gy(4), w:72,  h:TILE, type:'grass' },
-    { x:830,  y:gy(6), w:96,  h:TILE, type:'cloud' },
-    { x:1050, y:gy(4), w:72,  h:TILE, type:'grass' },
-    { x:1250, y:gy(7), w:72,  h:TILE, type:'cloud' },
-    { x:1450, y:gy(4), w:96,  h:TILE, type:'grass' },
-    { x:1700, y:gy(6), w:72,  h:TILE, type:'grass' },
-    { x:1920, y:gy(4), w:96,  h:TILE, type:'grass' },
-    { x:2180, y:gy(6), w:72,  h:TILE, type:'cloud' },
-    { x:2400, y:gy(4), w:72,  h:TILE, type:'grass' },
-    { x:2600, y:gy(7), w:72,  h:TILE, type:'cloud' },
-    { x:2820, y:gy(4), w:96,  h:TILE, type:'grass' },
-    { x:3050, y:gy(6), w:72,  h:TILE, type:'grass' },
-    { x:3280, y:gy(4), w:96,  h:TILE, type:'grass' },
-    { x:3530, y:gy(7), w:72,  h:TILE, type:'cloud' },
-    { x:3760, y:gy(4), w:96,  h:TILE, type:'grass' },
-    { x:4020, y:gy(6), w:72,  h:TILE, type:'grass' },
-    { x:4240, y:gy(4), w:96,  h:TILE, type:'grass' },
-    { x:4500, y:gy(7), w:72,  h:TILE, type:'cloud' },
-    { x:4720, y:gy(4), w:96,  h:TILE, type:'grass' },
-    { x:4980, y:gy(6), w:72,  h:TILE, type:'grass' },
-    { x:5200, y:gy(4), w:144, h:TILE, type:'grass' },
+    { x:280,  y:gy(3), w:96,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:460,  y:gy(5), w:72,  h:TILE, type:'grass' },  // coins at gy(7)
+    { x:640,  y:gy(3), w:72,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:820,  y:gy(5), w:96,  h:TILE, type:'cloud' },  // coins at gy(7)
+    { x:1040, y:gy(3), w:72,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:1240, y:gy(6), w:72,  h:TILE, type:'cloud' },  // coins at gy(8)
+    { x:1440, y:gy(3), w:96,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:1680, y:gy(5), w:72,  h:TILE, type:'grass' },  // coins at gy(7)
+    { x:1900, y:gy(3), w:96,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:2140, y:gy(5), w:72,  h:TILE, type:'cloud' },  // coins at gy(7)
+    { x:2360, y:gy(3), w:72,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:2560, y:gy(6), w:72,  h:TILE, type:'cloud' },  // coins at gy(8)
+    { x:2780, y:gy(3), w:96,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:3020, y:gy(5), w:72,  h:TILE, type:'grass' },  // coins at gy(7)
+    { x:3240, y:gy(3), w:96,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:3480, y:gy(6), w:72,  h:TILE, type:'cloud' },  // coins at gy(8)
+    { x:3700, y:gy(3), w:96,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:3960, y:gy(5), w:72,  h:TILE, type:'grass' },  // coins at gy(7)
+    { x:4180, y:gy(3), w:96,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:4420, y:gy(6), w:72,  h:TILE, type:'cloud' },  // coins at gy(8)
+    { x:4660, y:gy(3), w:96,  h:TILE, type:'grass' },  // coins at gy(5)
+    { x:4900, y:gy(5), w:72,  h:TILE, type:'grass' },  // coins at gy(7)
+    { x:5150, y:gy(3), w:144, h:TILE, type:'grass' },  // coins at gy(5)
   ],
 
   blocks:[
-    { x:310,  y:gy(7),  type:'question' },
-    { x:490,  y:gy(9),  type:'brick' },
-    { x:670,  y:gy(7),  type:'question' },
-    { x:870,  y:gy(9),  type:'question' },
-    { x:1080, y:gy(7),  type:'brick' },
-    { x:1480, y:gy(7),  type:'question' },
-    { x:1730, y:gy(9),  type:'brick' },
-    { x:1950, y:gy(7),  type:'question' },
-    { x:2210, y:gy(9),  type:'question' },
-    { x:2430, y:gy(7),  type:'brick' },
-    { x:2850, y:gy(7),  type:'question' },
-    { x:3080, y:gy(9),  type:'brick' },
-    { x:3310, y:gy(7),  type:'question' },
-    { x:3790, y:gy(7),  type:'question' },
-    { x:4050, y:gy(9),  type:'brick' },
-    { x:4270, y:gy(7),  type:'question' },
-    { x:4750, y:gy(7),  type:'question' },
-    { x:5230, y:gy(7),  type:'brick' },
+    { x:300,  y:gy(5), type:'question' },   // 1 tile above platform top gy(3)+1=gy(4), reachable
+    { x:490,  y:gy(7), type:'brick' },
+    { x:660,  y:gy(5), type:'question' },
+    { x:850,  y:gy(7), type:'question' },
+    { x:1060, y:gy(5), type:'brick' },
+    { x:1460, y:gy(5), type:'question' },
+    { x:1700, y:gy(7), type:'brick' },
+    { x:1920, y:gy(5), type:'question' },
+    { x:2160, y:gy(7), type:'question' },
+    { x:2380, y:gy(5), type:'brick' },
+    { x:2800, y:gy(5), type:'question' },
+    { x:3040, y:gy(7), type:'brick' },
+    { x:3260, y:gy(5), type:'question' },
+    { x:3720, y:gy(5), type:'question' },
+    { x:3980, y:gy(7), type:'brick' },
+    { x:4200, y:gy(5), type:'question' },
+    { x:4680, y:gy(5), type:'question' },
+    { x:5170, y:gy(5), type:'brick' },
   ],
 
+  // Coins 2 tiles above each platform — platform at gy(N) → coins at gy(N+2)
   coins:[
-    ...coinArc(310,  5, 9, 3),
-    ...coinArc(670,  5, 9, 3),
-    ...coinArc(1080, 5, 9, 3),
-    ...coinArc(1480, 5, 9, 3),
-    ...coinArc(1960, 5, 9, 3),
-    ...coinArc(2440, 5, 9, 3),
-    ...coinArc(2850, 5, 9, 3),
-    ...coinArc(3310, 5, 9, 3),
-    ...coinArc(3800, 5, 9, 3),
-    ...coinArc(4280, 5, 9, 3),
-    ...coinArc(4760, 5, 9, 3),
-    ...coinArc(5240, 5, 9, 3),
+    ...coinArc(328,  5, 5, 2),   // platform gy(3) → coins gy(5) to gy(7)
+    ...coinArc(496,  5, 7, 2),   // platform gy(5) → coins gy(7) to gy(9)
+    ...coinArc(676,  5, 5, 2),
+    ...coinArc(868,  5, 7, 2),
+    ...coinArc(1076, 5, 5, 2),
+    ...coinArc(1276, 5, 8, 2),   // platform gy(6) → coins gy(8) to gy(10)
+    ...coinArc(1488, 5, 5, 2),
+    ...coinArc(1716, 5, 7, 2),
+    ...coinArc(1948, 5, 5, 2),
+    ...coinArc(2176, 5, 7, 2),
+    ...coinArc(2396, 5, 5, 2),
+    ...coinArc(2596, 5, 8, 2),
+    ...coinArc(2828, 5, 5, 2),
+    ...coinArc(3056, 5, 7, 2),
+    ...coinArc(3288, 5, 5, 2),
+    ...coinArc(3516, 5, 8, 2),
+    ...coinArc(3748, 5, 5, 2),
+    ...coinArc(3988, 5, 7, 2),
+    ...coinArc(4228, 5, 5, 2),
+    ...coinArc(4458, 5, 8, 2),
+    ...coinArc(4708, 5, 5, 2),
+    ...coinArc(4936, 5, 7, 2),
+    ...coinArc(5198, 5, 5, 2),
   ],
 
+  // Dense pigs — ground + on every platform
   pigs:[
-    { x:400,  y:gy(0), type:'normal', hp:1 },
-    { x:580,  y:gy(0), type:'normal', hp:1 },
-    { x:780,  y:gy(0), type:'helmet', hp:2 },
-    { x:1000, y:gy(0), type:'normal', hp:1 },
-    { x:1200, y:gy(0), type:'helmet', hp:2 },
-    { x:1400, y:gy(0), type:'normal', hp:1 },
-    { x:1650, y:gy(0), type:'helmet', hp:2 },
-    { x:1870, y:gy(0), type:'fat',    hp:3 },
-    { x:2130, y:gy(0), type:'normal', hp:1 },
-    { x:2360, y:gy(0), type:'helmet', hp:2 },
-    { x:2580, y:gy(0), type:'fat',    hp:3 },
-    { x:2780, y:gy(0), type:'normal', hp:1 },
-    { x:3000, y:gy(0), type:'helmet', hp:2 },
-    { x:3230, y:gy(0), type:'fat',    hp:3 },
-    { x:3480, y:gy(0), type:'normal', hp:1 },
-    { x:3710, y:gy(0), type:'helmet', hp:2 },
-    { x:3970, y:gy(0), type:'fat',    hp:3 },
-    { x:4190, y:gy(0), type:'normal', hp:1 },
-    { x:4450, y:gy(0), type:'helmet', hp:2 },
-    { x:4670, y:gy(0), type:'fat',    hp:3 },
-    { x:4930, y:gy(0), type:'helmet', hp:2 },
-    { x:5150, y:gy(0), type:'fat',    hp:3 },
+    // Ground pigs every ~150px
+    ...Array.from({length:35}, (_, i) => ({
+      x: 220 + i*155,
+      y: gy(0),
+      type: i%6===0?'fat' : i%3===0?'helmet' : 'normal',
+      hp:  i%6===0?3      : i%3===0?2         : 1
+    })),
+    // Platform pigs — 1 pig on each platform
+    { x:300,  y:gy(4), type:'normal', hp:1 },
+    { x:480,  y:gy(6), type:'normal', hp:1 },
+    { x:660,  y:gy(4), type:'helmet', hp:2 },
+    { x:840,  y:gy(6), type:'normal', hp:1 },
+    { x:1060, y:gy(4), type:'helmet', hp:2 },
+    { x:1260, y:gy(7), type:'fat',    hp:3 },
+    { x:1460, y:gy(4), type:'normal', hp:1 },
+    { x:1700, y:gy(6), type:'helmet', hp:2 },
+    { x:1920, y:gy(4), type:'normal', hp:1 },
+    { x:2160, y:gy(6), type:'fat',    hp:3 },
+    { x:2380, y:gy(4), type:'helmet', hp:2 },
+    { x:2580, y:gy(7), type:'fat',    hp:3 },
+    { x:2800, y:gy(4), type:'normal', hp:1 },
+    { x:3040, y:gy(6), type:'helmet', hp:2 },
+    { x:3260, y:gy(4), type:'normal', hp:1 },
+    { x:3500, y:gy(7), type:'fat',    hp:3 },
+    { x:3720, y:gy(4), type:'helmet', hp:2 },
+    { x:3980, y:gy(6), type:'fat',    hp:3 },
+    { x:4200, y:gy(4), type:'normal', hp:1 },
+    { x:4440, y:gy(7), type:'fat',    hp:3 },
+    { x:4680, y:gy(4), type:'helmet', hp:2 },
+    { x:4920, y:gy(6), type:'fat',    hp:3 },
+    { x:5170, y:gy(4), type:'normal', hp:1 },
   ],
 
   structures:[
@@ -269,6 +333,11 @@ const level2 = makeLevel({
       {dx:0,dy:0,type:'stone',w:TILE*2,h:TILE*4},{dx:TILE*3,dy:0,type:'stone',w:TILE*2,h:TILE*4},
       {dx:0,dy:-TILE*4,type:'stone',w:TILE*5,h:TILE*0.6}],
       pigs:[{x:0,y:-TILE*4.5,type:'fat',hp:3},{x:TILE*3,y:-TILE*4.5,type:'fat',hp:3}]
+    },
+    {x:4800, y:gy(0), blocks:[
+      {dx:0,dy:0,type:'stone',w:TILE*2,h:TILE*4},{dx:TILE*3,dy:0,type:'stone',w:TILE*2,h:TILE*4},
+      {dx:0,dy:-TILE*4,type:'stone',w:TILE*5,h:TILE*0.6}],
+      pigs:[{x:TILE,y:-TILE*4.5,type:'king',hp:5},{x:TILE*3,y:-TILE*4.5,type:'fat',hp:3}]
     },
   ],
   slingshots:[{x:160,y:gy(0)},{x:1200,y:gy(0)},{x:2800,y:gy(0)},{x:4400,y:gy(0)}]
@@ -314,25 +383,59 @@ const level3 = makeLevel({
   ],
 
   coins:[
-    ...coinArc(380,  5, 8, 3),
-    ...coinArc(820,  5, 8, 3),
-    ...coinArc(1330, 5, 8, 3),
-    ...coinArc(1820, 5, 8, 3),
-    ...coinArc(2380, 5, 8, 3),
-    ...coinArc(2880, 5, 8, 3),
-    ...coinArc(3430, 5, 8, 3),
-    ...coinArc(3980, 5, 8, 3),
-    ...coinArc(4530, 5, 8, 3),
-    ...coinArc(5080, 5, 8, 3),
-    ...coinArc(5640, 5, 8, 3),
+    // Each arc placed 2 tiles above nearest platform
+    // Platforms at gy(2)→coins at gy(4); gy(4)→coins at gy(6); gy(5)→coins at gy(7)
+    ...coinArc(396,  5, 4, 2),   // platform gy(2)
+    ...coinArc(848,  5, 4, 2),
+    ...coinArc(1120, 5, 6, 2),   // platform gy(4)
+    ...coinArc(1348, 5, 4, 2),
+    ...coinArc(1572, 5, 6, 2),
+    ...coinArc(1848, 5, 4, 2),
+    ...coinArc(2116, 5, 7, 2),   // platform gy(5)
+    ...coinArc(2372, 5, 5, 2),   // platform gy(3)
+    ...coinArc(2616, 5, 7, 2),
+    ...coinArc(2896, 5, 4, 2),
+    ...coinArc(3172, 5, 6, 2),
+    ...coinArc(3448, 5, 4, 2),
+    ...coinArc(3716, 5, 7, 2),
+    ...coinArc(3968, 5, 5, 2),
+    ...coinArc(4268, 5, 7, 2),
+    ...coinArc(4548, 5, 4, 2),
+    ...coinArc(4820, 5, 6, 2),
+    ...coinArc(5068, 5, 4, 2),
+    ...coinArc(5372, 5, 6, 2),
+    ...coinArc(5648, 5, 4, 2),
   ],
 
   pigs:[
+    // Ground pigs every ~200px
     ...Array.from({length:28},(_, i)=>({
       x: 420+i*200, y:gy(0),
       type: i%4===0?'fat':i%3===0?'helmet':'normal',
       hp: i%4===0?3:i%3===0?2:1
-    }))
+    })),
+    // Platform pigs — 1 per elevated platform
+    { x:396,  y:gy(3), type:'normal', hp:1 },  // on gy(2)
+    { x:640,  y:gy(5), type:'helmet', hp:2 },  // on gy(4)
+    { x:840,  y:gy(3), type:'normal', hp:1 },
+    { x:1140, y:gy(6), type:'fat',    hp:3 },  // on gy(5)
+    { x:1340, y:gy(3), type:'helmet', hp:2 },
+    { x:1590, y:gy(5), type:'fat',    hp:3 },
+    { x:1840, y:gy(3), type:'normal', hp:1 },
+    { x:2140, y:gy(6), type:'helmet', hp:2 },
+    { x:2390, y:gy(4), type:'fat',    hp:3 },
+    { x:2640, y:gy(6), type:'helmet', hp:2 },
+    { x:2890, y:gy(3), type:'normal', hp:1 },
+    { x:3190, y:gy(5), type:'fat',    hp:3 },
+    { x:3440, y:gy(3), type:'helmet', hp:2 },
+    { x:3740, y:gy(6), type:'fat',    hp:3 },
+    { x:3990, y:gy(4), type:'normal', hp:1 },
+    { x:4290, y:gy(6), type:'helmet', hp:2 },
+    { x:4540, y:gy(3), type:'fat',    hp:3 },
+    { x:4840, y:gy(5), type:'normal', hp:1 },
+    { x:5090, y:gy(3), type:'helmet', hp:2 },
+    { x:5390, y:gy(5), type:'fat',    hp:3 },
+    { x:5640, y:gy(3), type:'normal', hp:1 },
   ],
 
   structures:[
@@ -388,20 +491,34 @@ const level4 = makeLevel({
   blocks: Array.from({length:20},(_, i)=>({ x:330+i*320, y:gy(7+i%2), type:i%3===0?'question':'brick' })),
 
   coins:[
-    ...coinArc(330,  5, 9, 3),
-    ...coinArc(700,  5, 9, 3),
-    ...coinArc(1080, 5, 9, 3),
-    ...coinArc(1500, 5, 9, 3),
-    ...coinArc(1920, 5, 9, 3),
-    ...coinArc(2360, 5, 9, 3),
-    ...coinArc(2800, 5, 9, 3),
-    ...coinArc(3240, 5, 9, 3),
-    ...coinArc(3700, 5, 9, 3),
-    ...coinArc(4160, 5, 9, 3),
-    ...coinArc(4620, 5, 9, 3),
-    ...coinArc(5080, 5, 9, 3),
-    ...coinArc(5540, 5, 9, 3),
-    ...coinArc(6000, 5, 9, 3),
+    // Platforms alternate gy(3)→coins gy(5), gy(5)→coins gy(7), gy(6)→coins gy(8)
+    ...coinArc(348,  5, 5, 2),
+    ...coinArc(520,  5, 7, 2),
+    ...coinArc(700,  5, 5, 2),
+    ...coinArc(882,  5, 8, 2),
+    ...coinArc(1082, 5, 6, 2),
+    ...coinArc(1302, 5, 8, 2),
+    ...coinArc(1502, 5, 5, 2),
+    ...coinArc(1722, 5, 7, 2),
+    ...coinArc(1922, 5, 5, 2),
+    ...coinArc(2142, 5, 8, 2),
+    ...coinArc(2362, 5, 6, 2),
+    ...coinArc(2582, 5, 8, 2),
+    ...coinArc(2802, 5, 5, 2),
+    ...coinArc(3022, 5, 7, 2),
+    ...coinArc(3242, 5, 5, 2),
+    ...coinArc(3482, 5, 8, 2),
+    ...coinArc(3702, 5, 6, 2),
+    ...coinArc(3942, 5, 8, 2),
+    ...coinArc(4162, 5, 5, 2),
+    ...coinArc(4402, 5, 7, 2),
+    ...coinArc(4622, 5, 5, 2),
+    ...coinArc(4862, 5, 8, 2),
+    ...coinArc(5082, 5, 6, 2),
+    ...coinArc(5322, 5, 8, 2),
+    ...coinArc(5542, 5, 5, 2),
+    ...coinArc(5762, 5, 7, 2),
+    ...coinArc(6002, 5, 5, 2),
   ],
 
   pigs: Array.from({length:32},(_, i)=>({
@@ -465,10 +582,11 @@ function buildAutoLevel(idx) {
     x: 280+i*330, y:gy(6+i%2), type:i%3===0?'question':'brick'
   }));
 
-  // Coins above platforms
+  // Coins above platforms — exactly 2 tiles above each platform top
   const coins2 = [];
   for (let i=0;i<plats.length;i+=2) {
-    coins2.push(...coinArc(plats[i].x+plats[i].w/2, 5, 8+i%3, 3));
+    const platTileH = plats[i].y[GY_TAG] ? plats[i].y.n : 3; // extract tile height from sentinel
+    coins2.push(...coinArc(plats[i].x+plats[i].w/2, 5, platTileH+2, 2));
   }
 
   // Pigs — dense
