@@ -96,9 +96,9 @@ const level1 = makeLevel({
   ],
 
   pigs: [
-    { x: 900,  y: gy(1), type: 'normal',  hp: 1 },
-    { x: 1400, y: gy(1), type: 'normal',  hp: 1 },
-    { x: 2200, y: gy(1), type: 'normal',  hp: 1 },
+    { x: 900,  y: gy(0), type: 'normal',  hp: 1 },
+    { x: 1400, y: gy(0), type: 'normal',  hp: 1 },
+    { x: 2200, y: gy(0), type: 'normal',  hp: 1 },
   ],
 
   structures: [
@@ -154,11 +154,11 @@ const level2 = makeLevel({
   })),
 
   pigs: [
-    { x: 700,  y: gy(1), type: 'normal', hp: 1 },
-    { x: 1100, y: gy(1), type: 'normal', hp: 1 },
-    { x: 1600, y: gy(1), type: 'normal', hp: 1 },
-    { x: 2400, y: gy(1), type: 'normal', hp: 1 },
-    { x: 3000, y: gy(1), type: 'normal', hp: 1 },
+    { x: 700,  y: gy(0), type: 'normal', hp: 1 },
+    { x: 1100, y: gy(0), type: 'normal', hp: 1 },
+    { x: 1600, y: gy(0), type: 'normal', hp: 1 },
+    { x: 2400, y: gy(0), type: 'normal', hp: 1 },
+    { x: 3000, y: gy(0), type: 'normal', hp: 1 },
   ],
 
   structures: [
@@ -219,12 +219,12 @@ const level3 = makeLevel({
   })),
 
   pigs: [
-    { x: 650,  y: gy(1), type: 'normal',  hp: 1 },
-    { x: 1150, y: gy(1), type: 'normal',  hp: 1 },
-    { x: 1800, y: gy(1), type: 'normal',  hp: 1 },
-    { x: 2450, y: gy(1), type: 'helmet',  hp: 2 },
-    { x: 3100, y: gy(1), type: 'normal',  hp: 1 },
-    { x: 3600, y: gy(1), type: 'helmet',  hp: 2 },
+    { x: 650,  y: gy(0), type: 'normal',  hp: 1 },
+    { x: 1150, y: gy(0), type: 'normal',  hp: 1 },
+    { x: 1800, y: gy(0), type: 'normal',  hp: 1 },
+    { x: 2450, y: gy(0), type: 'helmet',  hp: 2 },
+    { x: 3100, y: gy(0), type: 'normal',  hp: 1 },
+    { x: 3600, y: gy(0), type: 'helmet',  hp: 2 },
   ],
 
   structures: [
@@ -292,13 +292,13 @@ const level4 = makeLevel({
   })),
 
   pigs: [
-    { x: 600,  y: gy(1), type: 'normal', hp: 1 },
-    { x: 900,  y: gy(1), type: 'helmet', hp: 2 },
-    { x: 1300, y: gy(1), type: 'normal', hp: 1 },
-    { x: 1700, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 2150, y: gy(1), type: 'normal', hp: 1 },
-    { x: 2700, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 3200, y: gy(1), type: 'normal', hp: 1 },
+    { x: 600,  y: gy(0), type: 'normal', hp: 1 },
+    { x: 900,  y: gy(0), type: 'helmet', hp: 2 },
+    { x: 1300, y: gy(0), type: 'normal', hp: 1 },
+    { x: 1700, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 2150, y: gy(0), type: 'normal', hp: 1 },
+    { x: 2700, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 3200, y: gy(0), type: 'normal', hp: 1 },
   ],
 
   structures: [
@@ -372,14 +372,14 @@ const level5 = makeLevel({
   })),
 
   pigs: [
-    { x: 500,  y: gy(1), type: 'normal', hp: 1 },
-    { x: 800,  y: gy(1), type: 'helmet', hp: 2 },
-    { x: 1200, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 1700, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 2300, y: gy(1), type: 'normal', hp: 1 },
-    { x: 2900, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 3500, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 4000, y: gy(1), type: 'normal', hp: 1 },
+    { x: 500,  y: gy(0), type: 'normal', hp: 1 },
+    { x: 800,  y: gy(0), type: 'helmet', hp: 2 },
+    { x: 1200, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 1700, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 2300, y: gy(0), type: 'normal', hp: 1 },
+    { x: 2900, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 3500, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 4000, y: gy(0), type: 'normal', hp: 1 },
   ],
 
   structures: [
@@ -460,15 +460,15 @@ const level6 = makeLevel({
   })),
 
   pigs: [
-    { x: 480,  y: gy(1), type: 'normal', hp: 1 },
-    { x: 780,  y: gy(1), type: 'helmet', hp: 2 },
-    { x: 1180, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 1500, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 1900, y: gy(1), type: 'normal', hp: 1 },
-    { x: 2350, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 2650, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 3150, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 3550, y: gy(1), type: 'helmet', hp: 2 },
+    { x: 480,  y: gy(0), type: 'normal', hp: 1 },
+    { x: 780,  y: gy(0), type: 'helmet', hp: 2 },
+    { x: 1180, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 1500, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 1900, y: gy(0), type: 'normal', hp: 1 },
+    { x: 2350, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 2650, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 3150, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 3550, y: gy(0), type: 'helmet', hp: 2 },
   ],
 
   structures: [
@@ -553,16 +553,16 @@ const level7 = makeLevel({
   })),
 
   pigs: [
-    { x: 450,  y: gy(1), type: 'normal', hp: 1 },
-    { x: 780,  y: gy(1), type: 'helmet', hp: 2 },
-    { x: 1150, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 1550, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 1900, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 2350, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 2700, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 3100, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 3450, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 3900, y: gy(1), type: 'fat',    hp: 3 },
+    { x: 450,  y: gy(0), type: 'normal', hp: 1 },
+    { x: 780,  y: gy(0), type: 'helmet', hp: 2 },
+    { x: 1150, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 1550, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 1900, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 2350, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 2700, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 3100, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 3450, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 3900, y: gy(0), type: 'fat',    hp: 3 },
   ],
 
   structures: [
@@ -648,17 +648,17 @@ const level8 = makeLevel({
   })),
 
   pigs: [
-    { x: 600,  y: gy(1), type: 'helmet', hp: 2 },
-    { x: 1000, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 1400, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 1850, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 2300, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 2750, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 3250, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 3700, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 4100, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 4600, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 5050, y: gy(1), type: 'fat',    hp: 3 },
+    { x: 600,  y: gy(0), type: 'helmet', hp: 2 },
+    { x: 1000, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 1400, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 1850, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 2300, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 2750, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 3250, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 3700, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 4100, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 4600, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 5050, y: gy(0), type: 'fat',    hp: 3 },
   ],
 
   structures: [
@@ -741,18 +741,18 @@ const level9 = makeLevel({
   })),
 
   pigs: [
-    { x: 550,  y: gy(1), type: 'fat',    hp: 3 },
-    { x: 950,  y: gy(1), type: 'fat',    hp: 3 },
-    { x: 1350, y: gy(1), type: 'king',   hp: 5 },
-    { x: 1800, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 2250, y: gy(1), type: 'helmet', hp: 2 },
-    { x: 2650, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 3150, y: gy(1), type: 'king',   hp: 5 },
-    { x: 3650, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 4050, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 4550, y: gy(1), type: 'king',   hp: 5 },
-    { x: 5000, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 5400, y: gy(1), type: 'helmet', hp: 2 },
+    { x: 550,  y: gy(0), type: 'fat',    hp: 3 },
+    { x: 950,  y: gy(0), type: 'fat',    hp: 3 },
+    { x: 1350, y: gy(0), type: 'king',   hp: 5 },
+    { x: 1800, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 2250, y: gy(0), type: 'helmet', hp: 2 },
+    { x: 2650, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 3150, y: gy(0), type: 'king',   hp: 5 },
+    { x: 3650, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 4050, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 4550, y: gy(0), type: 'king',   hp: 5 },
+    { x: 5000, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 5400, y: gy(0), type: 'helmet', hp: 2 },
   ],
 
   structures: [
@@ -849,20 +849,20 @@ const level10 = makeLevel({
   })),
 
   pigs: [
-    { x: 500,  y: gy(1), type: 'fat',    hp: 3 },
-    { x: 850,  y: gy(1), type: 'king',   hp: 5 },
-    { x: 1300, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 1750, y: gy(1), type: 'king',   hp: 5 },
-    { x: 2200, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 2700, y: gy(1), type: 'king',   hp: 5 },
-    { x: 3150, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 3650, y: gy(1), type: 'king',   hp: 5 },
-    { x: 4150, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 4700, y: gy(1), type: 'king',   hp: 5 },
-    { x: 5250, y: gy(1), type: 'fat',    hp: 3 },
-    { x: 5650, y: gy(1), type: 'fat',    hp: 3 },
+    { x: 500,  y: gy(0), type: 'fat',    hp: 3 },
+    { x: 850,  y: gy(0), type: 'king',   hp: 5 },
+    { x: 1300, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 1750, y: gy(0), type: 'king',   hp: 5 },
+    { x: 2200, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 2700, y: gy(0), type: 'king',   hp: 5 },
+    { x: 3150, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 3650, y: gy(0), type: 'king',   hp: 5 },
+    { x: 4150, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 4700, y: gy(0), type: 'king',   hp: 5 },
+    { x: 5250, y: gy(0), type: 'fat',    hp: 3 },
+    { x: 5650, y: gy(0), type: 'fat',    hp: 3 },
     // FINAL BOSS
-    { x: 6300, y: gy(1), type: 'king',   hp: 10, isBoss: true },
+    { x: 6300, y: gy(0), type: 'king',   hp: 10, isBoss: true },
   ],
 
   structures: [

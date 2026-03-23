@@ -212,8 +212,7 @@ class Pig {
   update(dt, level) {
     if (!this.alive) {
       this.dieTimer += dt;
-      this.vy += (level.gravity || 900) * dt;
-      this.y  += this.vy * dt;
+      // Movement handled by Physics.updatePig
       return;
     }
     if (this.hitFlash > 0) this.hitFlash -= dt;
@@ -228,11 +227,7 @@ class Pig {
     this.vx = this.patrolDir * speed;
     this.facingRight = this.vx > 0;
 
-    // Gravity
-    this.vy = Math.min(this.vy + (level.gravity || 900) * dt, 800);
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
-    this.onGround = false;
+    // NOTE: gravity, x/y movement and collision handled by Physics.updatePig()
 
     // Animation
     this.animTimer += dt;
@@ -418,12 +413,15 @@ function buildLevelObjects(levelData, canvasHeight) {
   // Player — always spawn on ground surface
   const player = new Player(levelData.startX, groundY - 52);
 
-  // Pigs — resolve y, default to sitting on ground
-  const pigs = levelData.pigs.map(p => new Pig({
-    ...p,
-    x: p.x,
-    y: ry(p.y !== undefined ? p.y : groundY - 52)
-  }));
+  // Pigs — resolve y, place flush on ground surface
+  const pigs = levelData.pigs.map(p => {
+    const pigH = { normal: 38, helmet: 42, fat: 52, king: 60 }[p.type] || 38;
+    return new Pig({
+      ...p,
+      x: p.x,
+      y: p.y !== undefined ? ry(p.y) : groundY - pigH
+    });
+  });
 
   // Coins — resolve y
   const coins = levelData.coins.map(c => new Coin(c.x, ry(c.y)));
